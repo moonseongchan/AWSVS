@@ -17,7 +17,7 @@ const SurfaceComponent = (props) => {
         data_y[i] = [...Array(length).fill(i+1)];
     }
     for (let i = 0; i < data_z.length; i++) {
-        data_z[i] = dummy_z * props.rx;
+        data_z[i] = dummy_z;
     }
     let data = [{
         x: data_x,
