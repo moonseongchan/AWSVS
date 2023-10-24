@@ -15,52 +15,67 @@ import "./SideBar.scss";
 
 const SideBar = (props) => {
   return (
-    <div class="col-md-3 border border-danger">
+    <div class="col-md-3 h-100 position-relative overflow-scroll">
       <ul
         class="nav nav-underline nav-fill flex-column flex-sm-row mb-3 nav-border"
         id="pills-tab"
         role="tablist"
       >
-        <li class="nav-item" role="presentation">
+        <li
+          class="nav-item align-items-center justify-content-center"
+          role="presentation"
+        >
           <button
-            class="nav-link active"
-            id="pills-home-tab"
+            class="nav-link"
+            id="pills-import-data-tab"
             data-bs-toggle="pill"
-            data-bs-target="#pills-home"
+            data-bs-target="#pills-import-data"
             type="button"
             role="tab"
-            aria-controls="pills-home"
+            aria-controls="pills-import-data"
             aria-selected="true"
           >
-            <AiOutlineCloudUpload /> Import Data
+            <div class="d-flex justify-content-center align-items-center">
+              <AiOutlineCloudUpload class="nav-icon" /> Import Data
+            </div>
           </button>
         </li>
-        <li class="nav-item" role="presentation">
+        <li
+          class="nav-item align-items-center justify-content-center"
+          role="presentation"
+        >
           <button
             class="nav-link"
-            id="pills-profile-tab"
+            id="pills-processing-tab"
             data-bs-toggle="pill"
-            data-bs-target="#pills-profile"
+            data-bs-target="#pills-processing"
             type="button"
             role="tab"
-            aria-controls="pills-profile"
+            aria-controls="pills-processing"
             aria-selected="false"
           >
-            <VscSettings /> Processing
+            <div class="d-flex justify-content-center align-items-center">
+              <VscSettings class="nav-icon" /> Processing
+            </div>
           </button>
         </li>
-        <li class="nav-item" role="presentation">
+        <li
+          class="nav-item align-items-center justify-content-center"
+          role="presentation"
+        >
           <button
             class="nav-link"
-            id="pills-contact-tab"
+            id="pills-setting-tab"
             data-bs-toggle="pill"
-            data-bs-target="#pills-contact"
+            data-bs-target="#pills-setting"
             type="button"
             role="tab"
-            aria-controls="pills-contact"
+            aria-controls="pills-setting"
             aria-selected="false"
           >
-            <AiOutlineSetting /> Setting
+            <div class="d-flex justify-content-center align-items-center">
+              <AiOutlineSetting class="nav-icon" /> Setting
+            </div>
           </button>
         </li>
       </ul>
