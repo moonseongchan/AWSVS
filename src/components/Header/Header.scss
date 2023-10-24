@@ -3,25 +3,17 @@ header {
     justify-content: center;
     align-items: center;
     background-color: #2b3140;
-    height: 10% !important;
-
-    #main-title {
-        display: inline-block;
-        margin: 0px;
-        padding-bottom: 3px;
-    }
-
-    #main-description {
-        padding-left: 10px;
-        font-size: smaller;
-    }
+    height: 9% !important;
 
     .download {
-        padding: 0px 2px 0px 2px;
+        padding: 0px 2px;
 
         .download-btn {
             float: right;
-            margin-top: 0.5px;
         }
+    }
+
+    #logo {
+        padding-bottom: 0.125rem;
     }
 }

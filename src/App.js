@@ -7,7 +7,7 @@ import Dashboard from "./components/Dashboard";
 export default function App() {
   return (
     <div class="container-fluid h-100">
-      <Header/>
+      <Header />
       <div id="content" class="row">
         <Dashboard />
         <SideBar />

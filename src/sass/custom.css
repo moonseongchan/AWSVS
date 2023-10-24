@@ -14,7 +14,7 @@ body,
 }
 
 #content {
-  height: 90% !important;
+  height: 91% !important;
   color: #293745;
 }
 
@@ -2722,14 +2722,15 @@ textarea.form-control-lg {
 }
 
 .form-check-input:focus {
-  border-color: #86b7fe;
+  border-color: #2693ff;
   outline: 0;
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  /* box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); */
 }
 
 .form-check-input:checked {
-  background-color: #0d6efd;
-  border-color: #0d6efd;
+  /* background-color: #0d6efd; */
+  background-color: #2693ff;
+  border-color: #2693ff;
 }
 
 .form-check-input:checked[type=checkbox] {
@@ -2764,7 +2765,9 @@ textarea.form-control-lg {
 
 .form-switch .form-check-input {
   --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%280, 0, 0, 0.25%29'/%3e%3c/svg%3e");
-  width: 2em;
+  /* width: 2em; */
+  width: 2.25rem;
+  height: 1.125rem;
   margin-left: -2.5em;
   background-image: var(--bs-form-switch-bg);
   background-position: left center;
@@ -2779,7 +2782,7 @@ textarea.form-control-lg {
 }
 
 .form-switch .form-check-input:focus {
-  --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%2386b7fe'/%3e%3c/svg%3e");
+  --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%232693ff'/%3e%3c/svg%3e");
 }
 
 .form-switch .form-check-input:checked {
@@ -5160,6 +5163,7 @@ fieldset:disabled .btn {
   border-radius: 0;
   overflow-anchor: none;
   transition: var(--bs-accordion-transition);
+  opacity: 0.8;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -5168,15 +5172,29 @@ fieldset:disabled .btn {
   }
 }
 
+/* Custom */
+.accordion-button.collapsing {
+  opacity: 1;
+  border-top: 1px solid var(--bs-accordion-border-color);
+  border-left: 1px solid var(--bs-accordion-border-color);
+  border-right: 1px solid var(--bs-accordion-border-color);
+  border-radius: 5px;
+}
+
 .accordion-button:not(.collapsed) {
-  color: var(--bs-accordion-active-color);
-  background-color: var(--bs-accordion-active-bg);
-  box-shadow: inset 0 calc(-1 * var(--bs-accordion-border-width)) 0 var(--bs-accordion-border-color);
+  /* color: var(--bs-accordion-active-color); */
+  color: #293745;
+  background-color: transparent !important;
+  /* box-shadow: inset 0 calc(-1 * var(--bs-accordion-border-width)) 0 var(--bs-accordion-border-color); */
+  opacity: 1;
+  /* border: 1px solid var(--bs-accordion-border-color); */
+  border-radius: 5px;
 }
 
 .accordion-button:not(.collapsed)::after {
   background-image: var(--bs-accordion-btn-active-icon);
   transform: var(--bs-accordion-btn-icon-transform);
+  opacity: 1;
 }
 
 .accordion-button::after {
@@ -5189,6 +5207,7 @@ fieldset:disabled .btn {
   background-repeat: no-repeat;
   background-size: var(--bs-accordion-btn-icon-width);
   transition: var(--bs-accordion-btn-icon-transition);
+  opacity: 0.8;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -5203,9 +5222,10 @@ fieldset:disabled .btn {
 
 .accordion-button:focus {
   z-index: 3;
-  border-color: var(--bs-accordion-btn-focus-border-color);
+  /* border-color: var(--bs-accordion-btn-focus-border-color); */
+  border-color: var(--bs-accordion-border-color);
   outline: 0;
-  box-shadow: var(--bs-accordion-btn-focus-box-shadow);
+  /* box-shadow: var(--bs-accordion-btn-focus-box-shadow); */
 }
 
 .accordion-header {
@@ -5215,40 +5235,56 @@ fieldset:disabled .btn {
 .accordion-item {
   color: var(--bs-accordion-color);
   background-color: var(--bs-accordion-bg);
-  border: var(--bs-accordion-border-width) solid var(--bs-accordion-border-color);
+  margin-bottom: 0.625rem;
+  /* border: var(--bs-accordion-border-width) solid var(--bs-accordion-border-color); */
 }
 
 .accordion-item:first-of-type {
-  border-top-left-radius: var(--bs-accordion-border-radius);
-  border-top-right-radius: var(--bs-accordion-border-radius);
+  /* border-top-left-radius: var(--bs-accordion-border-radius);
+  border-top-right-radius: var(--bs-accordion-border-radius); */
+  border-radius: var(--bs-accordion-border-radius);
 }
 
 .accordion-item:first-of-type .accordion-button {
-  border-top-left-radius: var(--bs-accordion-inner-border-radius);
-  border-top-right-radius: var(--bs-accordion-inner-border-radius);
+  /* border-top-left-radius: var(--bs-accordion-inner-border-radius);
+  border-top-right-radius: var(--bs-accordion-inner-border-radius); */
+  border-radius: var(--bs-accordion-border-radius);
+}
+
+.accordion-item:not(:last-of-type:first-of-type) {
+  border-radius: var(--bs-accordion-border-radius);
 }
 
 .accordion-item:not(:first-of-type) {
-  border-top: 0;
+  /* border-top: 0; */
 }
 
 .accordion-item:last-of-type {
-  border-bottom-right-radius: var(--bs-accordion-border-radius);
-  border-bottom-left-radius: var(--bs-accordion-border-radius);
+  /* border-bottom-right-radius: var(--bs-accordion-border-radius);
+  border-bottom-left-radius: var(--bs-accordion-border-radius); */
+  border-radius: var(--bs-accordion-border-radius);
 }
 
 .accordion-item:last-of-type .accordion-button.collapsed {
-  border-bottom-right-radius: var(--bs-accordion-inner-border-radius);
-  border-bottom-left-radius: var(--bs-accordion-inner-border-radius);
+  /* border-bottom-right-radius: var(--bs-accordion-inner-border-radius);
+  border-bottom-left-radius: var(--bs-accordion-inner-border-radius); */
+  border-radius: var(--bs-accordion-border-radius);
 }
 
 .accordion-item:last-of-type .accordion-collapse {
-  border-bottom-right-radius: var(--bs-accordion-border-radius);
-  border-bottom-left-radius: var(--bs-accordion-border-radius);
+  /* border-bottom-right-radius: var(--bs-accordion-border-radius);
+  border-bottom-left-radius: var(--bs-accordion-border-radius); */
+  border-radius: var(--bs-accordion-border-radius);
+}
+
+.accordion-item:not(:has(.accordion-button.collapsed)) {
+  border: var(--bs-accordion-border-width) solid var(--bs-accordion-border-color);
+  box-shadow: 0px 1px 0px 0px #d0d0d0
 }
 
 .accordion-body {
-  padding: var(--bs-accordion-body-padding-y) var(--bs-accordion-body-padding-x);
+  /* padding: var(--bs-accordion-body-padding-y) var(--bs-accordion-body-padding-x); */
+  padding: 0.75rem 1.5rem var(--bs-accordion-body-padding-y) 3.5rem;
 }
 
 .accordion-flush .accordion-collapse {

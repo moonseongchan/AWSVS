@@ -6,7 +6,7 @@ import Image from "../../assets/logo_title.svg";
 const Header = (props) => {
   return (
     <header class="row">
-      <div class="col px-1">
+      <div class="col px-2" id="logo">
         <img src={Image} alt="logo" height={55} />
       </div>
       <div class="col download">
