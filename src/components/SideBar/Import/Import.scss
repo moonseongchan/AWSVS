@@ -1,0 +1,48 @@
+#wifi-btn,
+#uwb-btn {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+    height: 5.125rem;
+    border: solid 1px #dae4ea;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    padding: 12px;
+    color: #293745;
+    font-weight: 500;
+    font-size: 1rem;
+    background-color: #fff;
+    transition: border 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+}
+
+#wifi-btn:hover,
+#uwb-btn:hover {
+    border: solid 1px #2693ff;
+    box-shadow: 0px 3px 3px 0px #d0d0d0
+}
+
+#wifi-file,
+#uwb-file {
+    display: none;
+}
+
+.btn-icon-box {
+    width: 3.5rem;
+    height: 3.5rem;
+    background-color: #eff6fc;
+    border-radius: 6px;
+    margin-right: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-icon {
+    font-size: 1.3rem;
+}
+
+.comments {
+    padding-left: 0.5rem;
+}
