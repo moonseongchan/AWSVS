@@ -15,7 +15,7 @@ import "./SideBar.scss";
 
 const SideBar = (props) => {
   return (
-    <div class="col-md-3 h-100 position-relative overflow-scroll">
+    <div class="col-md-3 h-100 position-relative overflow-y-scroll">
       <ul
         class="nav nav-underline nav-fill flex-column flex-sm-row mb-3 nav-border"
         id="pills-tab"

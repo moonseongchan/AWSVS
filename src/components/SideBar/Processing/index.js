@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { AiOutlineDatabase } from "react-icons/ai";
 import { MdNumbers } from "react-icons/md";
@@ -6,6 +6,16 @@ import { LuFilter } from "react-icons/lu";
 import "./Processing.scss";
 
 const Processing = (props) => {
+  useEffect(() => {
+    // Show Range Slider Values
+    const showKalmanAlpha = document.getElementById("show-kalman-alpha");
+    const kalmanAlpha = document.getElementById("kalman-alpha");
+    showKalmanAlpha.innerHTML = kalmanAlpha.value;
+    kalmanAlpha.addEventListener("change", (event) => {
+      showKalmanAlpha.innerHTML = event.target.value;
+    });
+  }, []);
+
   return (
     <div
       class="tab-pane fade"
@@ -190,12 +200,16 @@ const Processing = (props) => {
               <div class="row d-flex accordion-component align-items-center">
                 <div class="col-md-6 justify-content-start">Alpha</div>
                 <div class="col-md-6 d-flex justify-content-end align-items-center">
+                  {/* Range */}
                   <input
-                    type="text"
-                    class="form-control form-control-sm text-input"
-                    placeholder="3"
-                    aria-label="kalman-alpha"
+                    type="range"
+                    min="0"
+                    max="3"
+                    step="0.1"
+                    class="form-range"
+                    id="kalman-alpha"
                   />
+                  <div class="show-range-value" id="show-kalman-alpha"></div>
                 </div>
               </div>
               <div class="row d-flex accordion-component align-items-center">
