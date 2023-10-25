@@ -23,6 +23,66 @@
     color: #fff;
 }
 
+// Slot
 .slot {
-    height: 30% !important;
+    // height: 50% !important;
+    // border: solid 1px #dae4ea;
+    max-width: 100% !important;
+    border: solid 1px #808080;
+    border-radius: 6px;
+    color: #293745;
+    background-color: #fff;
+    box-shadow: 0px 1px 1px 0px #d4d4d4;
+}
+
+.slot-header {
+    height: 3rem;
+    border-bottom: 1px solid #d4d4d4;
+}
+
+.slot-index {
+    color: #293745;
+    height: 75%;
+    width: 2.25rem;
+    border: 1px solid #b0b0b0;
+    border-right: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    // border-radius: 3px;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+
+.slot-footer {
+    height: 3rem;
+    border-top: 1px solid #d4d4d4;
+}
+
+.slot-title {
+    border: 1px solid #b0b0b0;
+    height: 75%;
+    text-align: center;
+    // margin-left: 0.5rem;
+    // border-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+.slot-close {
+    padding-right: 0.25rem !important;
+    font-size: 1rem;
+    outline: none !important;
+    border: none;
+}
+
+.slot-close-btn:focus,
+.slot-close-btn:not(:focus) {
+    outline: none !important;
+    border: none;
+}
+
+.slot-content {
+    margin: 1.25rem 0.5rem !important;
 }
