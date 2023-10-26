@@ -5,7 +5,7 @@ import "./Dashboard.scss";
 
 const Dashboard = (props) => {
   return (
-    <div class="col-md-9 p-2 h-100 position-relative overflow-scroll">
+    <div class="dashboard-content col-md-9 h-100 position-relative overflow-scroll">
       <div class="d-flex flex-row-reverse pb-2">
         <button type="button" class="new-slot-btn">
           New Slot
