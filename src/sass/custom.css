@@ -5236,7 +5236,7 @@ fieldset:disabled .btn {
 .accordion-item {
   color: var(--bs-accordion-color);
   background-color: var(--bs-accordion-bg);
-  margin-bottom: 0.625rem;
+  margin-bottom: 0.75rem;
   /* border: var(--bs-accordion-border-width) solid var(--bs-accordion-border-color); */
 }
 

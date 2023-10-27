@@ -14,15 +14,15 @@ import Setting from "./Setting";
 import "./SideBar.scss";
 
 const SideBar = (props) => {
-  const [selectedSlot, setSelectedSlot] = useState("Select Slot");
+  const [currentSlot, setCurrentSlot] = useState("Select Slot");
 
   const handleItemClick = (event) => {
     const value = event.target.textContent;
-    setSelectedSlot(value);
+    setCurrentSlot(value);
   };
 
   return (
-    <div class="sidebar-content col-md-3 h-100 d-flex flex-column min-vh-91 max-vh-91">
+    <div id = "sidebar-content" class=" col-md-3 h-100 d-flex flex-column min-vh-91 max-vh-91">
       <div class="d-flex flex-column" style={{ height: "94%" }}>
         {/* NavBar */}
         <ul
@@ -108,7 +108,7 @@ const SideBar = (props) => {
             aria-expanded="false"
             id="slot-select-btn"
           >
-            {selectedSlot}
+            {currentSlot}
           </button>
           <ul class="dropdown-menu">
             <li>
