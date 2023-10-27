@@ -1,9 +1,9 @@
-.dashboard-content {
+#dashboard-content {
     border-right: 1px solid #d4d4d4;
-    padding: 0.5rem 1rem !important;
+    padding: 0.5rem 1rem 0rem 1rem !important;
 }
 
-.dashboard-content::-webkit-scrollbar {
+#dashboard-content::-webkit-scrollbar {
     display: none !important;
 }
 
@@ -42,6 +42,7 @@
     color: #293745;
     background-color: #fff;
     box-shadow: 0px 1px 1px 0px #d4d4d4;
+    margin-bottom: 1rem !important;
 }
 
 .slot-header {
@@ -80,18 +81,47 @@
 }
 
 .slot-close {
-    padding-right: 0.25rem !important;
-    font-size: 1rem;
+    padding-right: 0.5rem !important;
+    font-size: 1.125rem !important;
     outline: none !important;
     border: none;
 }
 
+.slot-close-btn {
+    padding: 0.375rem 0.5rem !important;
+    margin: 0rem 0.25rem;
+}
+
+.slot-toggle-btn {
+    width: auto !important;
+    font-size: 1.125rem !important;
+    padding: 0.375rem 0.5rem !important;
+    opacity: 1 !important;
+}
+
 .slot-close-btn:focus,
-.slot-close-btn:not(:focus) {
+.slot-close-btn:not(:focus),
+.slot-toggle-btn:focus,
+.slot-toggle-btn:not(:focus) {
     outline: none !important;
     border: none;
 }
 
 .slot-content {
     margin: 1.25rem 0.5rem !important;
+}
+
+.modal-content {
+    border: 1px solid #293745;
+    box-shadow: 0px 5px 10px 5px #d4d4d4 !important;
+}
+
+.modal-backdrop {
+    display: none;
+    z-index: 1040 !important;
+}
+
+.modal-content {
+    margin: 2px auto;
+    z-index: 1100 !important;
 }
