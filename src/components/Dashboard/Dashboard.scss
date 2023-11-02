@@ -1,6 +1,6 @@
 #dashboard-content {
     border-right: 1px solid #d4d4d4;
-    padding: 0.5rem 1rem 0rem 1rem !important;
+    padding: 0.75rem 1rem 0rem 1rem !important;
 }
 
 #dashboard-content::-webkit-scrollbar {
@@ -41,7 +41,7 @@
     border-radius: 6px;
     color: #293745;
     background-color: #fff;
-    box-shadow: 0px 1px 1px 0px #d4d4d4;
+    box-shadow: 0px 1px 2px 0px #d4d4d4;
     margin-bottom: 1rem !important;
 }
 
@@ -70,17 +70,20 @@
     border-top: 1px solid #d4d4d4;
 }
 
+.slot-title-section {
+    width: 50% !important;
+}
+
 .slot-title {
     border: 1px solid #b0b0b0;
     height: 75%;
     text-align: center;
-    // margin-left: 0.5rem;
-    // border-radius: 3px;
     border-top-right-radius: 3px;
     border-bottom-right-radius: 3px;
 }
 
-.slot-close {
+.slot-close-section {
+    width: 50% !important;
     padding-right: 0.5rem !important;
     font-size: 1.125rem !important;
     outline: none !important;
@@ -92,11 +95,20 @@
     margin: 0rem 0.25rem;
 }
 
+.slot-move-btn {
+    width: auto !important;
+    font-size: 1.125rem !important;
+    padding: 0.375rem 0.5rem !important;
+    opacity: 1 !important;
+    margin: 0rem 0.25rem !important;
+}
+
 .slot-toggle-btn {
     width: auto !important;
     font-size: 1.125rem !important;
     padding: 0.375rem 0.5rem !important;
     opacity: 1 !important;
+    margin: 0rem 0.25rem !important;
 }
 
 .slot-close-btn:focus,

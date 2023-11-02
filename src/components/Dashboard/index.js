@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 import { AiOutlineClose } from "react-icons/ai";
 import { BiExpandVertical } from "react-icons/bi";
+import { BiMenu } from "react-icons/bi";
 import "./Dashboard.scss";
 
 const Dashboard = (props) => {
@@ -14,11 +15,13 @@ const Dashboard = (props) => {
     };
     setIdx(idx + 1);
     setSlots([...slots, newSlot]);
+    props.getSlots([...slots, newSlot]);
   };
 
   const removeSlot = (slotId) => {
     const updatedSlots = slots.filter((slot) => slot.id !== slotId);
     setSlots(updatedSlots);
+    props.getSlots(updatedSlots);
   };
 
   return (
@@ -26,7 +29,7 @@ const Dashboard = (props) => {
       id="dashboard-content"
       class="col-md-9 h-100 position-relative overflow-scroll"
     >
-      <div class="d-flex flex-row-reverse pb-2">
+      <div class="d-flex flex-row-reverse" style={{ paddingBottom: "0.75rem" }}>
         <button type="button" class="new-slot-btn" onClick={createSlot}>
           New Slot
         </button>
@@ -36,7 +39,7 @@ const Dashboard = (props) => {
         <div key={slot.id} className="slot container w-100">
           {/* Slot Header */}
           <div className="slot-header row d-flex align-items-start align-items-center">
-            <div className="position-relative ps-2 h-100 col-md-6 d-flex justify-content-start align-items-center">
+            <div className="slot-title-section position-relative ps-2 h-100 d-flex justify-content-start align-items-center">
               <div id={`slot${slot.id}`} className="slot-index">
                 {slot.id}
               </div>
@@ -47,7 +50,13 @@ const Dashboard = (props) => {
                 placeholder="Title"
               />
             </div>
-            <div className="slot-close h-100 col-md-6 d-flex justify-content-end align-items-center">
+            <div className="slot-close-section h-100 d-flex justify-content-end align-items-center">
+              <button
+                type="button"
+                className="slot-move-btn btn d-flex justify-content-end align-items-center accordion-button collapsed"
+              >
+                <BiMenu />
+              </button>
               <button
                 type="button"
                 className="slot-toggle-btn btn d-flex justify-content-end align-items-center accordion-button collapsed"
