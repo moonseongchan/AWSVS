@@ -15,14 +15,20 @@ import "./SideBar.scss";
 
 const SideBar = (props) => {
   const [currentSlot, setCurrentSlot] = useState("Select Slot");
+  const [currentSlotId, setCurrentSlotId] = useState("Select Slot");
+  const slots = props.slots;
 
-  const handleItemClick = (event) => {
-    const value = event.target.textContent;
+  const selectSlot = (event, id) => {
+    const value = event.target.innerHTML;
     setCurrentSlot(value);
+    setCurrentSlotId("slot" + id);
   };
 
   return (
-    <div id = "sidebar-content" class=" col-md-3 h-100 d-flex flex-column min-vh-91 max-vh-91">
+    <div
+      id="sidebar-content"
+      class=" col-md-3 h-100 d-flex flex-column min-vh-91 max-vh-91"
+    >
       <div class="d-flex flex-column" style={{ height: "94%" }}>
         {/* NavBar */}
         <ul
@@ -111,16 +117,17 @@ const SideBar = (props) => {
             {currentSlot}
           </button>
           <ul class="dropdown-menu">
-            <li>
-              <a class="dropdown-item" href="#" onClick={handleItemClick}>
-                Slot 1
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="#" onClick={handleItemClick}>
-                Slot 2
-              </a>
-            </li>
+            {slots.map((slot) => (
+              <li>
+                <a
+                  class="dropdown-item"
+                  href="#"
+                  onClick={(event) => selectSlot(event, slot.id)}
+                >
+                  Slot {slot.id}
+                </a>
+              </li>
+            ))}
           </ul>
         </div>
       </div>

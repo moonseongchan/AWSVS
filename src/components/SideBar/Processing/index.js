@@ -143,6 +143,17 @@ const Processing = (props) => {
           <div id="hampel-filter-collapse" class="accordion-collapse collapse">
             <div class="accordion-body">
               <div class="row d-flex accordion-component align-items-center">
+                <div class="col-md-6 justify-content-start">Apply Filter</div>
+                <div class="form-check form-switch col-md-6 d-flex justify-content-end align-items-center">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    id="apply-hampel-filter"
+                  />
+                </div>
+              </div>
+              <div class="row d-flex accordion-component align-items-center">
                 <div class="col-md-6 justify-content-start">Beta</div>
                 <div class="col-md-6 d-flex justify-content-end align-items-center">
                   <input
@@ -197,6 +208,17 @@ const Processing = (props) => {
           {/* Should Match ID of It */}
           <div id="kalman-filter-collapse" class="accordion-collapse collapse">
             <div class="accordion-body">
+              <div class="row d-flex accordion-component align-items-center">
+                <div class="col-md-6 justify-content-start">Apply Filter</div>
+                <div class="form-check form-switch col-md-6 d-flex justify-content-end align-items-center">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    id="apply-kalman-filter"
+                  />
+                </div>
+              </div>
               <div class="row d-flex accordion-component align-items-center">
                 <div class="col-md-6 justify-content-start">Alpha</div>
                 <div class="col-md-6 d-flex justify-content-end align-items-center">
