@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data Visualization</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <div id="chart-container">
+        <svg id="chart" width="800" height="400"></svg>
+    </div>
+
+    <script>
+        // 서버에서 받은 JSON 데이터
+        const data = {{ data|safe }};
+        
+        // D3.js를 사용하여 데이터 플로팅
+        const margin = { top: 20, right: 20, bottom: 40, left: 40 };
+        const width = 800 - margin.left - margin.right;
+        const height = 400 - margin.top - margin.bottom;
+        
+        const svg = d3.select("#chart")
+            .append("g")
+            .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+        const x = d3.scaleLinear()
+            .domain([0, data.length - 1])
+            .range([0, width]);
+
+        const y = d3.scaleLinear()
+            .domain([0, d3.max(data)])
+            .nice()
+            .range([height, 0]);
+
+        const line = d3.line()
+            .x((d, i) => x(i))
+            .y(d => y(d));
+
+        svg.append("path")
+            .datum(data)
+            .attr("fill", "none")
+            .attr("stroke", "blue")
+            .attr("stroke-width", 1.5)
+            .attr("d", line);
+
+        svg.append("g")
+            .attr("transform", `translate(0, ${height})`)
+            .call(d3.axisBottom(x));
+
+        svg.append("g")
+            .call(d3.axisLeft(y));
+
+    </script>
+</body>
+</html>
