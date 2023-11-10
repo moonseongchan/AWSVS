@@ -4,7 +4,7 @@ import { AiOutlineClose } from "react-icons/ai";
 import { BiExpandVertical } from "react-icons/bi";
 import { BiMenu } from "react-icons/bi";
 import "./Dashboard.scss";
-
+import LineGraphComponent from "./linegraph.js"
 const Dashboard = (props) => {
   const [idx, setIdx] = useState(0);
   const [slots, setSlots] = useState([]);
@@ -84,10 +84,10 @@ const Dashboard = (props) => {
                 {/* Line Graph */}
                 <div
                   id={`slot${slot.id}-linegraph`}
-                  style={{ height: "5rem" }}
+                  style={{ height: "100%" }}
                   className="border border-1 border-danger my-3 line-graph"
                 >
-                  Line Graph
+                  <LineGraphComponent/>
                 </div>
                 {/* Spectrogram */}
                 <div
