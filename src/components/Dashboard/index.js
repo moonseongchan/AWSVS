@@ -5,6 +5,7 @@ import { BiExpandVertical } from "react-icons/bi";
 import { BiMenu } from "react-icons/bi";
 import "./Dashboard.scss";
 import LineGraphComponent from "./linegraph.js"
+import CustomSpectrogramComponent from "./spectrogram.js"
 const Dashboard = (props) => {
   const [idx, setIdx] = useState(0);
   const [slots, setSlots] = useState([]);
@@ -92,10 +93,10 @@ const Dashboard = (props) => {
                 {/* Spectrogram */}
                 <div
                   id={`slot${slot.id}-spectrogram`}
-                  style={{ height: "5rem" }}
+                  style={{ height: "100%" }}
                   className="border border-1 border-danger my-3 spectrogram"
                 >
-                  Spectrogram
+                  <CustomSpectrogramComponent/>
                 </div>
                 {/* PCA & Cluster */}
                 <div
