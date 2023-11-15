@@ -5,18 +5,60 @@ import SideBar from "./components/SideBar";
 import Dashboard from "./components/Dashboard";
 
 export default function App() {
+  // Entire Information in slots
   const [slots, setSlots] = useState([]);
+  const [idx, setIdx] = useState(0);
 
-  const getSlots = (input) => {
-    setSlots(input);
+  const getUpdatedSlots = (value) => {
+    console.log(value);
+    setSlots(value);
+  };
+
+  const createSlot = () => {
+    // 초기 Slot 정보
+    const newSlot = {
+      id: idx + 1,
+      data: [],
+      processing: {
+        applySignalDenoising : false,
+        window: 1,
+        // Window < Degree of Polynomial
+        degreeOfPolynomial: 3,
+        applySTFT: false,
+        applyCWT: false,
+        wavelet: "cgau1",
+        scale: 2,
+      },
+      options: {
+        axisX: null,
+        axisY: null,
+        showLegend: false,
+        legendPosition: "top",
+        legendAlign: "center",
+        showValues: false,
+        showCaptions: false,
+        showGrid: false,
+      },
+    };
+    setIdx(idx + 1);
+    setSlots([...slots, newSlot]);
+  };
+
+  const removeSlot = (slotId) => {
+    const updatedSlots = slots.filter((slot) => slot.id !== slotId);
+    setSlots(updatedSlots);
   };
 
   return (
     <div class="container-fluid h-100">
       <Header />
       <div id="content" class="row">
-        <Dashboard getSlots={getSlots} />
-        <SideBar slots={slots} />
+        <Dashboard
+          slots={slots}
+          createSlot={createSlot}
+          removeSlot={removeSlot}
+        />
+        <SideBar slots={slots} getUpdatedSlots={getUpdatedSlots} />
       </div>
     </div>
   );

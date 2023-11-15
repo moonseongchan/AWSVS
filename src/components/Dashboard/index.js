@@ -1,29 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import LineGraphComponent from "./linegraph.js";
+import CustomSpectrogramComponent from "./spectrogram.js";
 
 import { AiOutlineClose } from "react-icons/ai";
 import { BiExpandVertical } from "react-icons/bi";
 import { BiMenu } from "react-icons/bi";
+
 import "./Dashboard.scss";
-import LineGraphComponent from "./linegraph.js"
-import CustomSpectrogramComponent from "./spectrogram.js"
+
 const Dashboard = (props) => {
-  const [idx, setIdx] = useState(0);
   const [slots, setSlots] = useState([]);
 
-  const createSlot = () => {
-    const newSlot = {
-      id: idx + 1,
-    };
-    setIdx(idx + 1);
-    setSlots([...slots, newSlot]);
-    props.getSlots([...slots, newSlot]);
-  };
-
-  const removeSlot = (slotId) => {
-    const updatedSlots = slots.filter((slot) => slot.id !== slotId);
-    setSlots(updatedSlots);
-    props.getSlots(updatedSlots);
-  };
+  useEffect(() => {
+    // App.js에서 Info 정보 넣기
+    setSlots(props.slots);
+  });
 
   return (
     <div
@@ -31,7 +22,7 @@ const Dashboard = (props) => {
       class="col-md-9 h-100 position-relative overflow-scroll"
     >
       <div class="d-flex flex-row-reverse" style={{ paddingBottom: "0.75rem" }}>
-        <button type="button" class="new-slot-btn" onClick={createSlot}>
+        <button type="button" class="new-slot-btn" onClick={props.createSlot}>
           New Slot
         </button>
       </div>
@@ -88,7 +79,8 @@ const Dashboard = (props) => {
                   style={{ height: "100%" }}
                   className="border border-1 border-danger my-3 line-graph"
                 >
-                  <LineGraphComponent/>
+                  {/* 특성 Slot에 따른 Data props로 넘겨주어야 함 (using Slot ID) */}
+                  {/* <LineGraphComponent/> */}
                 </div>
                 {/* Spectrogram */}
                 <div
@@ -96,7 +88,7 @@ const Dashboard = (props) => {
                   style={{ height: "100%" }}
                   className="border border-1 border-danger my-3 spectrogram"
                 >
-                  <CustomSpectrogramComponent/>
+                  {/* <CustomSpectrogramComponent /> */}
                 </div>
                 {/* PCA & Cluster */}
                 <div
@@ -153,7 +145,7 @@ const Dashboard = (props) => {
                     type="submit"
                     class="btn btn-danger"
                     onClick={() => {
-                      removeSlot(slot.id);
+                      props.removeSlot(slot.id);
                     }}
                   >
                     Delete

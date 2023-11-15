@@ -14,15 +14,76 @@ import Setting from "./Setting";
 import "./SideBar.scss";
 
 const SideBar = (props) => {
-  const [currentSlot, setCurrentSlot] = useState("Select Slot");
-  const [currentSlotId, setCurrentSlotId] = useState("Select Slot");
-  const slots = props.slots;
+  // SideBar에서 선택된 Slot만을 고려하기 위한 Value들
+  const [currentSlotLabel, setCurrentSlotLabel] = useState("Select Slot");
+  const [currentSlotId, setCurrentSlotId] = useState(-1);
 
   const selectSlot = (event, id) => {
-    const value = event.target.innerHTML;
-    setCurrentSlot(value);
-    setCurrentSlotId("slot" + id);
+    setCurrentSlotLabel(event.target.innerHTML);
+    setCurrentSlotId(id);
   };
+
+  // currentSlot이 바뀔때마다 해당 Slot의 설정 값들로 변경해줘야 함
+  // currentSlotId가 바뀔때마다 Rerendering 필요 (=> useEffect)
+  const [slots, setSlots] = useState([]);
+
+  // Processing으로 보낼 Info들 (선택된 Slot에 따라)
+  const [processInfo, setProcessInfo] = useState({});
+
+  // Setting으로 보낼 Info들 (선택된 Slot에 따라)
+  const [optionsInfo, setOptionsInfo] = useState({});
+
+  const processRawData = () => {};
+
+  const getUpdatedData = (key, value) => {
+    // Slot이 아무것도 선택되지 않았으면 실행하지 않음
+    if (currentSlotId !== -1) {
+      let newSlots;
+      if (key === "data") {
+        newSlots = slots.map((slot) => {
+          if (slot.id === currentSlotId) {
+            return { ...slot, data: value };
+          }
+          return slot;
+        });
+      } else if (key === "processing") {
+        newSlots = slots.map((slot) => {
+          if (slot.id === currentSlotId) {
+            return { ...slot, processing: value };
+          }
+          return slot;
+        });
+      } else if (key === "options") {
+        newSlots = slots.map((slot) => {
+          if (slot.id === currentSlotId) {
+            return { ...slot, options: value };
+          }
+          return slot;
+        });
+      }
+      // console.log("Upated", currentSlotId, newSlots);
+      setSlots(newSlots);
+      // TODO - Raw Data를 Processing해줘야 함
+      props.getUpdatedSlots(newSlots);
+    }
+  };
+
+  useEffect(() => {
+    setSlots(props.slots);
+  }, [props]);
+
+  useEffect(() => {
+    // 초기 상태 고려
+    if (currentSlotId === -1) {
+      return;
+    } else {
+      const selectedSlot = slots.filter((slot) => slot.id === currentSlotId);
+      const newProcessInfo = selectedSlot[0].processing;
+      const optionsInfo = selectedSlot[0].options;
+      setProcessInfo(newProcessInfo);
+      setOptionsInfo(optionsInfo);
+    }
+  }, [currentSlotId, props]);
 
   return (
     <div
@@ -96,9 +157,17 @@ const SideBar = (props) => {
         </ul>
 
         <div class="tab-content overflow-y-scroll" id="pills-tabContent">
-          <Import />
-          <Processing />
-          <Setting />
+          <Import getUpdatedData={getUpdatedData}/>
+          <Processing
+            currentSlotId={currentSlotId}
+            info={processInfo}
+            getUpdatedData={getUpdatedData}
+          />
+          <Setting
+            currentSlotId={currentSlotId}
+            info={optionsInfo}
+            getUpdatedData={getUpdatedData}
+          />
         </div>
       </div>
       {/* Dropdown */}
@@ -114,7 +183,7 @@ const SideBar = (props) => {
             aria-expanded="false"
             id="slot-select-btn"
           >
-            {currentSlot}
+            {currentSlotLabel}
           </button>
           <ul class="dropdown-menu">
             {slots.map((slot) => (
