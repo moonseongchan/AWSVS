@@ -70,7 +70,7 @@ const Dashboard = (props) => {
           </div>
 
           <div id={`slot${slot.id}-body`} class="accordion-collapse collapse">
-            <div class="accordion-body">
+            <div class="dashboard-body accordion-body">
               {/* Slot Content */}
               <div className="border border-2 border-warning slot-content row align-items-center d-flex">
                 {/* Line Graph */}
