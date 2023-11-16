@@ -1,10 +1,22 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 import { data2 } from "./data";
 
 const CustomSpectrogramComponent = (props) => {
-  const margin = { top: 20, right: 20, bottom: 40, left: 40 };
-  const width = 800 - margin.left - margin.right;
+  const margin = {top: 20, right: 20, bottom: 40, left: 40};
+  const getGraphWidth = () => {
+    const sidebar = document.getElementById('sidebar-content').getBoundingClientRect().width;
+    const isSidebarNext = window.innerWidth - sidebar < 30 ? false : true;
+    const width = isSidebarNext ? window.innerWidth * 0.69 : window.innerWidth * 0.88;
+    return width;
+  };
+  const handleResize = () => {
+    const width = getGraphWidth() - margin.left - margin.right;
+    setWidth(width);
+  };
+
+  const initialWidth = getGraphWidth() - margin.left - margin.right;
+  const [width, setWidth] = useState(initialWidth);
   const height = 200 - margin.bottom - margin.top;
   const graphSvg = useRef();
 
@@ -36,7 +48,7 @@ const CustomSpectrogramComponent = (props) => {
           .attr("height", rect_height)
           .style("fill", colorScale(data[i][j]))
           .attr("transform", `translate(${margin.left}, 0)`);
-  }, []);
+  }, [width]);
   return (
     <div>
       <svg ref={graphSvg} width={width} height={height}></svg>

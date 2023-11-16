@@ -6,10 +6,23 @@ const LineGraphComponent = (props) => {
   // const [data, setData] = useState([]);
 
   const margin = { top: 20, right: 20, bottom: 40, left: 40 };
-  const width = 800 - margin.left - margin.right;
+  const getGraphWidth = () => {
+        const sidebar = document.getElementById('sidebar-content').getBoundingClientRect().width;
+        const isSidebarNext = window.innerWidth - sidebar < 30 ? false : true;
+        const width = isSidebarNext ? window.innerWidth * 0.69 : window.innerWidth * 0.88;
+        return width;
+    };
+  const handleResize = () => {
+    const width = getGraphWidth() - margin.left - margin.right;
+    setWidth(width);
+  };
+
+  const initialWidth = getGraphWidth() - margin.left - margin.right;
+  const [width, setWidth] = useState(initialWidth);
   const height = 200 - margin.top - margin.bottom;
 
   useEffect(() => {
+    window.addEventListener('resize', handleResize);
     let data = data1;
 
     if (data.length > 0) {
@@ -62,7 +75,7 @@ const LineGraphComponent = (props) => {
           .attr("d", line);
       });
     }
-  }, []);
+  }, [width]);
 
   return (
     <div>
