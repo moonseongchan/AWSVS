@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 import { AiOutlineCloudUpload } from "react-icons/ai";
 import { LuDatabaseBackup } from "react-icons/lu";
@@ -33,9 +34,7 @@ const SideBar = (props) => {
   // Setting으로 보낼 Info들 (선택된 Slot에 따라)
   const [optionsInfo, setOptionsInfo] = useState({});
 
-  const processRawData = () => {};
-
-  const getUpdatedData = (key, value) => {
+  const getUpdatedData = async (key, value) => {
     // Slot이 아무것도 선택되지 않았으면 실행하지 않음
     if (currentSlotId !== -1) {
       let newSlots;
@@ -61,9 +60,33 @@ const SideBar = (props) => {
           return slot;
         });
       }
-      // console.log("Upated", currentSlotId, newSlots);
+
+      // Raw Data Processing
+      const selectedSlot = newSlots.filter((slot) => slot.id === currentSlotId);
+      if (selectedSlot[0].data.length !== 0) {
+        const formData = new FormData();
+        formData.append("data", JSON.stringify(selectedSlot[0].data));
+        formData.append("processing", JSON.stringify(selectedSlot[0].processing));
+        try {
+          const response = await axios.post(
+            "http://localhost:5000/get",
+            formData,
+            { withCredentials: true }
+          );
+          // console.log(response.data.result);
+          newSlots = newSlots.map((slot) => {
+            if (slot.id === currentSlotId) {
+              return { ...slot, plot: response.data.result };
+            }
+            return slot;
+          });
+        } catch (error) {
+          console.error("Error Uploading File:", error);
+        }
+      }
+
+      // console.log("Updated", currentSlotId, newSlots);
       setSlots(newSlots);
-      // TODO - Raw Data를 Processing해줘야 함
       props.getUpdatedSlots(newSlots);
     }
   };
@@ -157,7 +180,7 @@ const SideBar = (props) => {
         </ul>
 
         <div class="tab-content overflow-y-scroll" id="pills-tabContent">
-          <Import getUpdatedData={getUpdatedData}/>
+          <Import currentSlotId={currentSlotId} getUpdatedData={getUpdatedData} />
           <Processing
             currentSlotId={currentSlotId}
             info={processInfo}

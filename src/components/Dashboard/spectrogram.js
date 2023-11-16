@@ -10,7 +10,7 @@ const CustomSpectrogramComponent = (props) => {
 
   useEffect(() => {
     let data = data2;
-    console.log(data);
+    // console.log(data);
 
     const numRows = data.length;
     const numCols = data[0].length;

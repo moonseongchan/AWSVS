@@ -32,7 +32,9 @@ const Setting = (props) => {
       zooming.checked = props.info.zooming;
       guideLine.checked = props.info.guideLine;
       brushForStatistics.checked = props.info.brushForStatistics;
-      brushColor.value = props.info.brushColor;
+
+      // TODO
+      // brushColor.value = props.info.brushColor;
     }
   }, [props.info]);
 
@@ -87,7 +89,7 @@ const Setting = (props) => {
               aria-expanded="false"
               aria-controls="axis-collapse"
             >
-              <FaArrowsUpDownLeftRight class="accordion-icon" />{" "}
+              <FaArrowsUpDownLeftRight class="setting-accordion-icon" />{" "}
               <span class="accordion-label">Axis</span>
             </button>
           </h2>
@@ -134,7 +136,7 @@ const Setting = (props) => {
               aria-expanded="false"
               aria-controls="legend-collapse"
             >
-              <FaChartLine class="accordion-icon" />{" "}
+              <FaChartLine class="setting-accordion-icon" />{" "}
               <span class="accordion-label">Graph</span>
             </button>
           </h2>
@@ -169,7 +171,10 @@ const Setting = (props) => {
               aria-expanded="false"
               aria-controls="values-collapse"
             >
-              <FaCropSimple class="accordion-icon" style={{marginTop : "0.05rem !important"}}/>{" "}
+              <FaCropSimple
+                class="setting-accordion-icon"
+                style={{ marginTop: "0.05rem !important" }}
+              />{" "}
               <span class="accordion-label">Interaction</span>
             </button>
           </h2>

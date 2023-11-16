@@ -18,26 +18,29 @@ export default function App() {
     // 초기 Slot 정보
     const newSlot = {
       id: idx + 1,
+      // 원본 Data
       data: [],
       processing: {
         applySignalDenoising : false,
-        window: 1,
-        // Window < Degree of Polynomial
-        degreeOfPolynomial: 3,
+        window: 3,
+        // Window > Degree of Polynomial
+        degreeOfPolynomial: 1,
         applySTFT: false,
         applyCWT: false,
         wavelet: "cgau1",
         scale: 2,
       },
       options: {
-        axisX: "",
-        axisY: "",
+        axisX: null,
+        axisY: null,
         showSpectrogram: false,
         zooming: false,
         guideLine: false,
         brushForStatistics: false,
         brushColor: null,
       },
+      // Dashboard에 시각화 할 Data
+      plot: [],
     };
     setIdx(idx + 1);
     setSlots([...slots, newSlot]);

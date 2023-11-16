@@ -51,7 +51,7 @@ def uploadFile():
     CIR =[]
     for row in reader:
         CIR.append(float(row[0]))
-    print(CIR)
+    # print(CIR)
 
     return jsonify({'result': CIR})
 
@@ -66,7 +66,7 @@ def temp_Get_Data():
 
 
 #send
-@app.route('/get')
+@app.route('/get', methods=['POST'])
 def get_data():
 
     #### argument format ######
@@ -77,62 +77,146 @@ def get_data():
     # param5: hyperparams1 for processing method
     # param6: hyperparams2 for processing method
 
-    param1 = request.args.get('param1')
-    param2 = request.args.get('param2')
-    param3 = request.args.get('param3')
-    param4 = request.args.get('param4')
-    param5 = request.args.get('param5')
-    param6 = request.args.get('param6')
-    print("#### Debug:: argument check ####")
-    print(param1,param2,param3,param4,param5,param6)
+    # param1 = request.args.get('param1')
+    # param2 = request.args.get('param2')
+    # param3 = request.args.get('param3')
+    # param4 = request.args.get('param4')
+    # param5 = request.args.get('param5')
+    # param6 = request.args.get('param6')
 
+    # print("#### Debug:: argument check ####")
+    # print(param1,param2,param3,param4,param5,param6)
 
+    #############################################
+    ### New Fetch Method
+    #############################################
+    data = np.array(json.loads(request.form['data']))
+    # data = np.array(temp_Get_Data()) #get measurement
+    # print(data)
 
-    #parse processing method
-    processing_method = param4
+    processInfo = json.loads(request.form['processing'])
+    # print(processInfo)
+    print("applySignalDenoising :", processInfo['applySignalDenoising'])
+    print("window :", processInfo['window'])
+    print("degreeOfPolynomial :", processInfo['degreeOfPolynomial'])
+    print("applySTFT :", processInfo['applySTFT'])
+    print("applyCWT :", processInfo['applyCWT'])
+    print("wavelet :", processInfo['wavelet'])
+    print("scale :", processInfo['scale'])
+    print("- "* 20, end="\n")
+
+    # Determine Processing Method
     resultData=[]
+    isSG = processInfo['applySignalDenoising']
+    isCWT = processInfo['applyCWT']
+    isSTFT = processInfo['applySTFT']
 
-    input = np.array(temp_Get_Data()) #get measurement
+    if len(data) > 100: # if 1D array
+        data = data.reshape((1, -1)) 
 
-
-    if len(input) > 100: #if 1D array
-        input = input.reshape((1, -1)) 
-
-    #processing
-    if(processing_method=='Raw'):
-        resultData = input
-
-    elif(processing_method=='SG'):
-        #parse hyperparameters
-        Window = int(param5)
-        DegreeOfPolynomial = int(param6)
-        # get result
-        resultData = SGfilteringPlot(Timedelayidx,input,Window,DegreeOfPolynomial)
-
-    elif(processing_method=='CWT'):
-        #parse hyperparameters
-        Wavelet = param5
-        Scale = int(param6)
-        resultData, _ = CwtPlot(Timedelayidx,input,Wavelet,Scale)
+    if not isSG and not isCWT and not isSTFT:
+        print("Raw")
+        resultData = data
+    elif not isSG and not isCWT:
+        print("Only STFT")
+        # TO DO (STFT)
+    elif not isSG and not isSTFT:
+        print("Only CWT")
+        Wavelet = processInfo['wavelet']
+        Scale = processInfo['scale']
+        resultData, _ = CwtPlot(Timedelayidx,data,Wavelet,Scale)
         resultData = abs(resultData)
         print("spectogram dimension is")
         print("Size of CWT return reulst is",np.shape(resultData))
-        #example Size  (12, 6, 512)
-        # 12: depending on scale
-        # 6: number of data
-        # 512 a data length
-
-    elif(processing_method=='STFT'):
-        pass
-
-    elif(processing_method=='PCA'):
-        pass
-
+    elif not isCWT and not isSTFT:
+        print("Only SG")
+        # Parse Hyperparameters
+        Window = processInfo['window']
+        DegreeOfPolynomial = processInfo['degreeOfPolynomial']
+        resultData = SGfilteringPlot(Timedelayidx,data,Window,DegreeOfPolynomial)
+    elif not isSG:
+        print("CWT & STFT")
+        Wavelet = processInfo['wavelet']
+        Scale = processInfo['scale']
+        fromCWT, _ = CwtPlot(Timedelayidx,data,Wavelet,Scale)
+        fromCWT = abs(fromCWT)
+        print("spectogram dimension is")
+        print("Size of CWT return reulst is",np.shape(fromCWT))
+        # TO DO (STFT)
+    elif not isCWT:
+        print("SG & STFT")
+        # Parse Hyperparameters
+        Window = processInfo['window']
+        DegreeOfPolynomial = processInfo['degreeOfPolynomial']
+        fromSG = SGfilteringPlot(Timedelayidx,data,Window,DegreeOfPolynomial)
+        # TO DO (STFT)
+    elif not isSTFT:
+        print("SG & CWT")
+        # Parse Hyperparameters
+        Window = processInfo['window']
+        DegreeOfPolynomial = processInfo['degreeOfPolynomial']
+        fromSG = SGfilteringPlot(Timedelayidx,data,Window,DegreeOfPolynomial)
+        Wavelet = processInfo['wavelet']
+        Scale = processInfo['scale']
+        resultData, _ = CwtPlot(Timedelayidx,fromSG,Wavelet,Scale)
+        resultData = abs(resultData)
+        print("spectogram dimension is")
+        print("Size of CWT return reulst is",np.shape(resultData))
     else:
-        print("Not availiable of processing_method")
+        print("SG & CWT & STFT")
+        # Parse Hyperparameters
+        Window = processInfo['window']
+        DegreeOfPolynomial = processInfo['degreeOfPolynomial']
+        fromSG = SGfilteringPlot(Timedelayidx,data,Window,DegreeOfPolynomial)
+        Wavelet = processInfo['wavelet']
+        Scale = processInfo['scale']
+        fromCWT, _ = CwtPlot(Timedelayidx,fromSG,Wavelet,Scale)
+        fromCWT = abs(fromCWT)
+        print("spectogram dimension is")
+        print("Size of CWT return reulst is",np.shape(fromCWT))
+        # TO DO (STFT)
+
+    result = resultData.tolist()
+    return jsonify({'result': result}) # 1D, 2D array ~
+
+    # if len(data) > 100: #if 1D array
+    #     data = data.reshape((1, -1)) 
+
+    # #processing
+    # if(processing_method=='Raw'):
+    #     resultData = data
+
+    # elif(processing_method=='SG'):
+    #     #parse hyperparameters
+    #     Window = processInfo['window']
+    #     DegreeOfPolynomial = processInfo['degreeOfPolynomial']
+    #     # get result
+    #     resultData = SGfilteringPlot(Timedelayidx,data,Window,DegreeOfPolynomial)
+
+    # elif(processing_method=='CWT'):
+    #     #parse hyperparameters
+    #     Wavelet = param5
+    #     Scale = processInfo['scale']
+    #     resultData, _ = CwtPlot(Timedelayidx,data,Wavelet,Scale)
+    #     resultData = abs(resultData)
+    #     print("spectogram dimension is")
+    #     print("Size of CWT return reulst is",np.shape(resultData))
+    #     #example Size  (12, 6, 512)
+    #     # 12: depending on scale
+    #     # 6: number of data
+    #     # 512 a data length
+
+    # elif(processing_method=='STFT'):
+    #     pass
+
+    # elif(processing_method=='PCA'):
+    #     pass
+
+    # else:
+    #     print("Not availiable of processing_method")
     
-    data = resultData.tolist()
-    return jsonify(data) #1D, 2D array ~
+    # result = resultData.tolist()
+    # return jsonify(result) # 1D, 2D array ~
 
 
 
@@ -151,7 +235,7 @@ def SGfiltering(CIR_amp,hyperparam1,hyperparam2):
     """
     #brief: CIR noise filtering via Savizy Golay filter 
     #args: real data (only avaialable for amplitude CIR), its length 1016
-    #       hyperparam1: windowing param, should be hyperparam1 <  hyperparam2
+    #       hyperparam1: windowing param, should be hyperparam1 < hyperparam2 ??? , hyperparam1 > hyperparam2
     #       hyperparam2:polynomial degree
     #output: real data , its length depend on input's length
     """
@@ -165,19 +249,9 @@ def scale_to_frequency_CWT(scale):
     Get frequency [Hz]
     """
     return 1.0 / scale
-
-
-def temp(file):
-    f = open(file, "r")
-    reader = csv.reader(f)
-    CIR =[]
-    for row in reader:
-        print(row)
-        MeasCIR = row        
-        CIR.append(float(row[0]))
-    CIR = np.array(CIR)
-    return CIR
     
+
+
 def GetMeasurement_mag(type="Ipatov",env="NLOS"):
     """
     parser, TODO consider I/Q meas.
@@ -269,4 +343,4 @@ def CwtPlot(Timedelayidx,StackedCIR,wavelet_name='cgau1',numScales=12): #scaling
 
     
 if __name__ == '__main__':
-    app.run(debug=True, port=5002)
+    app.run(debug=True, port=5000)
