@@ -24,8 +24,8 @@ Ts = 1/Fs;
 Timedelayidx = np.arange(0,512*Ts,Ts); 
 c = 299792458; # speed of light in the air, m/sec
 ParseError = -1;
-CIR=[] #global data
-##########################################################
+CIR=[] #global
+########################
 
 
 app = Flask(__name__)
@@ -57,7 +57,7 @@ def uploadFile():
 
 
 
-def temp_Get_Data():
+def temp_Get_Data(local_CIR):
     GlobalCIR = CIR
     if len(CIR) == 0:
         return GetMeasurement_mag(type="Ipatov",env="NLOS") #only test
@@ -65,7 +65,11 @@ def temp_Get_Data():
         return CIR
 
 
-#send
+
+
+
+
+
 @app.route('/get')
 def get_data():
 
@@ -83,56 +87,61 @@ def get_data():
     param4 = request.args.get('param4')
     param5 = request.args.get('param5')
     param6 = request.args.get('param6')
-    print("#### Debug:: argument check ####")
-    print(param1,param2,param3,param4,param5,param6)
+    print("argument check")
+    print(param1,param2,param3,param4,param5)
 
 
-
-    #parse processing method
+    #parse
     processing_method = param4
-    resultData=[]
-
-    input = np.array(temp_Get_Data()) #get measurement
 
 
-    if len(input) > 100: #if 1D array
-        input = input.reshape((1, -1)) 
-
-    #processing
     if(processing_method=='Raw'):
-        resultData = input
-
+        resultData = temp_Get_Data()
     elif(processing_method=='SG'):
-        #parse hyperparameters
-        Window = int(param5)
-        DegreeOfPolynomial = int(param6)
-        # get result
-        resultData = SGfilteringPlot(Timedelayidx,input,Window,DegreeOfPolynomial)
-
+        pass
     elif(processing_method=='CWT'):
-        #parse hyperparameters
-        Wavelet = param5
-        Scale = int(param6)
-        resultData, _ = CwtPlot(Timedelayidx,input,Wavelet,Scale)
-        resultData = abs(resultData)
-        print("spectogram dimension is")
-        print("Size of CWT return reulst is",np.shape(resultData))
-        #example Size  (12, 6, 512)
-        # 12: depending on scale
-        # 6: number of data
-        # 512 a data length
-
+        pass
     elif(processing_method=='STFT'):
         pass
-
-    elif(processing_method=='PCA'):
+    elif(processing_method=='STFT'):
         pass
-
     else:
         print("Not availiable of processing_method")
     
-    data = resultData.tolist()
-    return jsonify(data) #1D, 2D array ~
+    return jsonify(resultData)
+
+    # if (param1=='all_type') and (param1=='all_type'):
+
+    #     IpatovCirAmp = GetMeasurement_mag("Ipatov","NLOS") #mandatory
+    #     Sts1CirAmp   = GetMeasurement_mag("STS1","NLOS")  #optional
+    #     Sts2CirAmp   = GetMeasurement_mag("STS2","NLOS")  #optional
+
+    #     IpatovCirAmp2 = GetMeasurement_mag("Ipatov","LOS") #mandatory
+    #     Sts1CirAmp2   = GetMeasurement_mag("STS1","LOS")  #optional
+    #     Sts2CirAmp2   = GetMeasurement_mag("STS2","LOS")  #optional
+
+    #     InputData = np.vstack((IpatovCirAmp, Sts1CirAmp, Sts2CirAmp, IpatovCirAmp2, Sts1CirAmp2, Sts2CirAmp2)) #debug data
+        
+        
+
+        # 1. raw results
+        #CIR_ret = InputData
+        # 2. SG filtering 
+    # CIR_ret= SGfilteringPlot(Timedelayidx,temp(param1),30,11) #requires 2 params
+        # 3. PCA
+        #CIR_ret= PcaPlot(Timedelayidx,InputData,3) #requires 1 param
+        # 4. Get CWT result, TODO, output is 3D matrix
+        #CIR_ret=CwtPlot(Timedelayidx,InputData,'cgau1',12,1e-9) #
+
+        # parse
+    
+
+
+
+
+    
+    
+
 
 
 
@@ -215,11 +224,13 @@ def GetMeasurement_mag(type="Ipatov",env="NLOS"):
 
     
 def SGfilteringPlot(Timedelayidx,StackedCIR,hyperParam1=20,hyperParam2=11):
-    CIR_ret = np.empty((StackedCIR.shape[0], StackedCIR.shape[1]))
-    for i in range(StackedCIR.shape[0]):
-        print(len(StackedCIR[i]))
+    print(StackedCIR.shape)
+    # CIR_ret = np.empty((StackedCIR.shape[0], StackedCIR.shape[1]))
+    CIR_ret = np.empty([])
+    for i in range(2):
         result =  SGfiltering(StackedCIR[i],hyperParam1,hyperParam2)
         CIR_ret[i]  = result
+
     print("Size of SGfilter result is",np.shape(CIR_ret))
     return CIR_ret
     
@@ -264,9 +275,10 @@ def CwtPlot(Timedelayidx,StackedCIR,wavelet_name='cgau1',numScales=12): #scaling
     sampling_period = 1e-9 #fixed
     scales= np.arange(1, numScales+1)
     coeffs, freqs = cwt(StackedCIR, scales, wavelet=wavelet_name,sampling_period=sampling_period)
+
     return coeffs, freqs
 
 
     
 if __name__ == '__main__':
-    app.run(debug=True, port=5002)
+    app.run(debug=True, port=5000)
