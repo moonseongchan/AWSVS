@@ -5285,7 +5285,7 @@ fieldset:disabled .btn {
 
 .accordion-body {
   /* padding: var(--bs-accordion-body-padding-y) var(--bs-accordion-body-padding-x); */
-  padding: 0.75rem 1.5rem 1.1rem 3.5rem;
+  padding: 0.75rem 1.5rem 1.2rem 3.5rem;
 }
 
 .accordion-flush .accordion-collapse {

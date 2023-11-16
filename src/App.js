@@ -30,14 +30,13 @@ export default function App() {
         scale: 2,
       },
       options: {
-        axisX: null,
-        axisY: null,
-        showLegend: false,
-        legendPosition: "top",
-        legendAlign: "center",
-        showValues: false,
-        showCaptions: false,
-        showGrid: false,
+        axisX: "",
+        axisY: "",
+        showSpectrogram: false,
+        zooming: false,
+        guideLine: false,
+        brushForStatistics: false,
+        brushColor: null,
       },
     };
     setIdx(idx + 1);
