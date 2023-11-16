@@ -30,10 +30,11 @@ CIR=[] #global data
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
-CORS(app, resources={r'*': {'origins': 'http://localhost:3000'}}, supports_credentials=True)
+CORS(app, resources={r'*': {'origins': 'http://localhost:3002'}}, supports_credentials=True)
 
 # Write your own data file path
-path = "C:/Users/ASUS/Desktop/InfoVis/Project/awsvs/src/data/"
+#path = "C:/Users/ASUS/Desktop/InfoVis/Project/awsvs/src/data/"
+path = "/Users/hslee/Desktop/GitMUC/Test/AWSVS/src/data"
 
 # Import Data => Python => Import Data
 @app.route('/upload', methods=['POST'])
@@ -51,9 +52,9 @@ def uploadFile():
     CIR =[]
     for row in reader:
         CIR.append(float(row[0]))
-    # print(CIR)
+    print(CIR)
 
-    return jsonify({'result': CIR})
+    return jsonify({'result': [CIR]})
 
 
 
@@ -117,6 +118,7 @@ def get_data():
     if not isSG and not isCWT and not isSTFT:
         print("Raw")
         resultData = data
+        print("Size of raw result is",np.shape(data))
     elif not isSG and not isCWT:
         print("Only STFT")
         # TO DO (STFT)
