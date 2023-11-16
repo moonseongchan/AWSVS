@@ -5,7 +5,7 @@ import { FaSignal } from "react-icons/fa";
 import { FaRegImage } from "react-icons/fa6";
 import { MdNumbers } from "react-icons/md";
 import { LuFilter } from "react-icons/lu";
-import { FaRegChartBar  } from "react-icons/fa6";
+import { FaRegChartBar } from "react-icons/fa6";
 import "./Processing.scss";
 
 const Processing = (props) => {
@@ -84,13 +84,9 @@ const Processing = (props) => {
       value = parseFloat(value);
     }
 
-    // For Window < Degree of Polynomial Constraint
-    if (id === "window" && value >= processInfo.degreeOfPolynomial) {
-      value = processInfo.degreeOfPolynomial - 1;
-      // For Window is always Odd number
-      if (value % 2 === 0) {
-        value -= 1;
-      }
+    // For Window > Degree of Polynomial Constraint
+    if (id === "degreeOfPolynomial" && value >= processInfo.window) {
+      value = processInfo.window - 1;
     }
 
     const newProcessInfo = {
@@ -98,7 +94,7 @@ const Processing = (props) => {
       [id]: value,
     };
     setProcessInfo(newProcessInfo);
-    console.log(newProcessInfo);
+    // console.log(newProcessInfo);
     props.getUpdatedData("processing", newProcessInfo);
   };
 
@@ -123,7 +119,7 @@ const Processing = (props) => {
               aria-expanded="false"
               aria-controls="data-collapse"
             >
-              <FaSignal class="accordion-icon" />{" "}
+              <FaSignal class="processing-accordion-icon" />{" "}
               <span class="accordion-label">Signal Denoising</span>
             </button>
           </h2>
@@ -135,7 +131,7 @@ const Processing = (props) => {
                 </div>
                 <div class="form-check form-switch col-md-6 d-flex justify-content-end align-items-center">
                   <input
-                    class="process-events form-check-input"
+                    class="form-check-input"
                     type="checkbox"
                     role="switch"
                     id="applySignalDenoising"
@@ -150,11 +146,11 @@ const Processing = (props) => {
                   <input
                     type="range"
                     id="window"
-                    min="1"
+                    min={processInfo.degreeOfPolynomial + 1}
                     max="31"
                     step="2"
                     defaultValue="15"
-                    class="process-events form-range"
+                    class="form-range"
                     onChange={(event) => dbUpdateData(event)}
                   />
                   <div class="show-range-value" id="show-window"></div>
@@ -170,11 +166,11 @@ const Processing = (props) => {
                   <input
                     type="range"
                     id="degreeOfPolynomial"
-                    min={processInfo.window + 1}
+                    min="1"
                     max="31"
                     step="1"
-                    defaultValue="16"
-                    class="process-events form-range"
+                    defaultValue="14"
+                    class="form-range"
                     onChange={(event) => dbUpdateData(event)}
                   />
                   <div
@@ -198,7 +194,7 @@ const Processing = (props) => {
               aria-expanded="false"
               aria-controls="hampel-filter-collapse"
             >
-              <FaRegImage class="accordion-icon"/>{" "}
+              <FaRegImage class="processing-accordion-icon" />{" "}
               <span class="accordion-label">CWT</span>
             </button>
           </h2>
@@ -209,7 +205,7 @@ const Processing = (props) => {
                 <div class="col-md-6 justify-content-start">Apply CWT</div>
                 <div class="form-check form-switch col-md-6 d-flex justify-content-end align-items-center">
                   <input
-                    class="process-events form-check-input"
+                    class="form-check-input"
                     type="checkbox"
                     role="switch"
                     id="applyCWT"
@@ -235,8 +231,8 @@ const Processing = (props) => {
                 </div>
               </div>
               <div class="row d-flex accordion-component align-items-center">
-                <div class="col-md-6 justify-content-start">Scale</div>
-                <div class="col-md-6 d-flex justify-content-end align-items-center">
+                <div class="col-md-4 justify-content-start">Scale</div>
+                <div class="col-md-8 d-flex justify-content-end align-items-center">
                   {/* Range */}
                   <input
                     type="range"
@@ -245,7 +241,7 @@ const Processing = (props) => {
                     max="256"
                     step="2"
                     defaultValue="128"
-                    class="process-events form-range"
+                    class="form-range"
                     onChange={(event) => dbUpdateData(event)}
                   />
                   <div class="show-range-value" id="show-scale"></div>
@@ -266,7 +262,7 @@ const Processing = (props) => {
               aria-expanded="false"
               aria-controls="parameter-collapse"
             >
-              <FaRegChartBar  class="accordion-icon" />{" "}
+              <FaRegChartBar class="processing-accordion-icon" />{" "}
               <span class="accordion-label">STFT</span>
             </button>
           </h2>
@@ -276,7 +272,7 @@ const Processing = (props) => {
                 <div class="col-md-6 justify-content-start">Apply STFT</div>
                 <div class="form-check form-switch col-md-6 d-flex justify-content-end align-items-center">
                   <input
-                    class="process-events form-check-input"
+                    class=" form-check-input"
                     type="checkbox"
                     role="switch"
                     id="applySTFT"
