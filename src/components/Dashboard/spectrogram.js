@@ -22,8 +22,7 @@ const CustomSpectrogramComponent = (props) => {
 
   useEffect(() => {
     let data = data2;
-    // console.log(data);
-
+    window.addEventListener('resize', handleResize);
     const numRows = data.length;
     const numCols = data[0].length;
     const rect_width = width / numCols;
