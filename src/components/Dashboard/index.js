@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import LineGraphComponent from "./linegraph.js";
-import CustomSpectrogramComponent from "./spectrogram.js";
+import LineGraph from "./linegraph.js";
+import Spectrogram from "./spectrogram.js";
 
 import { AiOutlineClose } from "react-icons/ai";
 import { BiExpandVertical } from "react-icons/bi";
@@ -14,7 +14,7 @@ const Dashboard = (props) => {
   useEffect(() => {
     // App.js에서 Info 정보 넣기
     setSlots(props.slots);
-  });
+  }, [props.slots]);
 
   return (
     <div
@@ -28,30 +28,30 @@ const Dashboard = (props) => {
       </div>
 
       {slots.map((slot) => (
-        <div key={slot.id} className="slot container w-100">
+        <div key={slot.id} class="slot container w-100">
           {/* Slot Header */}
-          <div className="slot-header row d-flex align-items-start align-items-center">
-            <div className="slot-title-section position-relative ps-2 h-100 d-flex justify-content-start align-items-center">
-              <div id={`slot${slot.id}`} className="slot-index">
+          <div class="slot-header row d-flex align-items-start align-items-center">
+            <div class="slot-title-section position-relative ps-2 h-100 d-flex justify-content-start align-items-center">
+              <div id={`slot${slot.id}`} class="slot-index">
                 {slot.id}
               </div>
               <input
                 type="text"
                 id={`slot${slot.id}-title`}
-                className="slot-title w-75"
+                class="slot-title w-75"
                 placeholder="Title"
               />
             </div>
-            <div className="slot-close-section h-100 d-flex justify-content-end align-items-center">
+            <div class="slot-close-section h-100 d-flex justify-content-end align-items-center">
               <button
                 type="button"
-                className="slot-move-btn btn d-flex justify-content-end align-items-center accordion-button collapsed"
+                class="slot-move-btn btn d-flex justify-content-end align-items-center accordion-button collapsed"
               >
                 <BiMenu />
               </button>
               <button
                 type="button"
-                className="slot-toggle-btn btn d-flex justify-content-end align-items-center accordion-button collapsed"
+                class="slot-toggle-btn btn d-flex justify-content-end align-items-center accordion-button collapsed"
                 data-bs-toggle="collapse"
                 data-bs-target={`#slot${slot.id}-body`}
                 aria-expanded="false"
@@ -60,7 +60,7 @@ const Dashboard = (props) => {
               </button>
               <button
                 type="button"
-                className="slot-close-btn btn d-flex justify-content-end align-items-center"
+                class="slot-close-btn btn d-flex justify-content-end align-items-center"
                 data-bs-toggle="modal"
                 data-bs-target={`#slot${slot.id}-modal`}
               >
@@ -72,55 +72,56 @@ const Dashboard = (props) => {
           <div id={`slot${slot.id}-body`} class="accordion-collapse collapse">
             <div class="dashboard-body accordion-body">
               {/* Slot Content */}
-              <div className="border border-2 border-warning slot-content row align-items-center d-flex">
+              <div class="slot-content row align-items-center d-flex">
                 {/* Line Graph */}
-                <div
-                  id={`slot${slot.id}-linegraph`}
-                  style={{ height: "100%" }}
-                  className="border border-1 border-danger my-3 line-graph"
-                >
+                <div id="line-graph" class="px-0 py-1 mb-1">
                   {/* 특성 Slot에 따른 Data props로 넘겨주어야 함 (using Slot ID) */}
-                  {/* <LineGraphComponent/> */}
+                  <LineGraph slot={slot} />
                 </div>
+                <hr class="my-0" />
+
                 {/* Spectrogram */}
-                <div
-                  id={`slot${slot.id}-spectrogram`}
-                  style={{ height: "100%" }}
-                  className="border border-1 border-danger my-3 spectrogram"
-                >
-                  {/* <CustomSpectrogramComponent /> */}
+                <div id="spectrogram" class="px-0 py-1 my-1">
+                  <Spectrogram slot={slot} />
                 </div>
+                <hr class="my-0" />
+
+                {/* Selected Spectrogram */}
+                <div id="selected-spectrogram" class="px-0 py-1 my-1">
+                  <Spectrogram slot={slot} />
+                </div>
+
                 {/* PCA & Cluster */}
-                <div
+                {/* <div
                   style={{ height: "5rem" }}
-                  className="border border-1 border-danger my-3 px-3 d-flex align-items-center justify-content-center"
+                  class="border border-1 border-danger my-1 px-3 d-flex align-items-center justify-content-center"
                 >
                   <div
                     id={`slot${slot.id}-pca`}
                     style={{ height: "90%", width: "45%" }}
-                    className="mx-3 border border-1 border-success"
+                    class="mx-3 border border-1 border-success"
                   >
                     PCA
                   </div>
                   <div
                     id={`slot${slot.id}-cluster`}
                     style={{ height: "90%", width: "45%" }}
-                    className="mx-3 border border-1 border-success"
+                    class="mx-3 border border-1 border-success"
                   >
                     Cluster
                   </div>
-                </div>
+                </div> */}
               </div>
 
               {/* Slot Footer */}
-              <div className="slot-footer row align-items-end d-flex align-items-center">
+              {/* <div class="slot-footer row align-items-end d-flex align-items-center">
                 <div>
                   Mean : <span id={`slot${slot.id}-mean`}> # </span> | Std :{" "}
                   <span id={`slot${slot.id}-std`}> # </span> | Max :{" "}
                   <span id={`slot${slot.id}-max`}> # </span> | Min :{" "}
                   <span id={`slot${slot.id}-min`}> # </span>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
 
