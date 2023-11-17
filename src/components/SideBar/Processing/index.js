@@ -43,6 +43,7 @@ const Processing = (props) => {
       "show-degree-of-polynomial"
     );
     const showScale = document.getElementById("show-scale");
+
     showWindow.innerHTML = window.value;
     window.addEventListener("change", (event) => {
       showWindow.innerHTML = event.target.value;
@@ -88,11 +89,32 @@ const Processing = (props) => {
     if (id === "degreeOfPolynomial" && value >= processInfo.window) {
       value = processInfo.window - 1;
     }
+    if (id === "window" && value % 2 === 0) {
+      value -= 1;
+    }
 
-    const newProcessInfo = {
+    let newProcessInfo = {
       ...processInfo,
       [id]: value,
     };
+
+    // CWT나 STFT 중 하나만 On되게끔 구현
+    if (id === "applySTFT") {
+      const applyCWT = document.getElementById("applyCWT");
+      applyCWT.checked = false;
+      newProcessInfo = {
+        ...newProcessInfo,
+        applyCWT: false,
+      };
+    } else if (id === "applyCWT") {
+      const applySTFT = document.getElementById("applySTFT");
+      applySTFT.checked = false;
+      newProcessInfo = {
+        ...newProcessInfo,
+        applySTFT: false,
+      };
+    }
+
     setProcessInfo(newProcessInfo);
     // console.log(newProcessInfo);
     props.getUpdatedData("processing", newProcessInfo);
@@ -146,7 +168,11 @@ const Processing = (props) => {
                   <input
                     type="range"
                     id="window"
-                    min={processInfo.degreeOfPolynomial + 1}
+                    min={
+                      (processInfo.degreeOfPolynomial + 1) % 2 === 0
+                        ? processInfo.degreeOfPolynomial + 2
+                        : processInfo.degreeOfPolynomial + 1
+                    }
                     max="31"
                     step="2"
                     defaultValue="15"
@@ -167,9 +193,9 @@ const Processing = (props) => {
                     type="range"
                     id="degreeOfPolynomial"
                     min="1"
-                    max="31"
+                    max="16"
                     step="1"
-                    defaultValue="14"
+                    defaultValue="8"
                     class="form-range"
                     onChange={(event) => dbUpdateData(event)}
                   />
@@ -238,9 +264,9 @@ const Processing = (props) => {
                     type="range"
                     id="scale"
                     min="2"
-                    max="256"
+                    max="64"
                     step="2"
-                    defaultValue="128"
+                    defaultValue="32"
                     class="form-range"
                     onChange={(event) => dbUpdateData(event)}
                   />
