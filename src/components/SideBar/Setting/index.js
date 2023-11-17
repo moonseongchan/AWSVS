@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { GoGraph } from "react-icons/go";
 import { FaArrowsUpDownLeftRight } from "react-icons/fa6";
 import { FaChartLine } from "react-icons/fa6";
+import { FaPalette } from "react-icons/fa6";
 import { FiList } from "react-icons/fi";
 import { FaCropSimple } from "react-icons/fa6";
 import "./Setting.scss";
@@ -15,26 +16,25 @@ const Setting = (props) => {
     // console.log("Loaded", props.currentSlotId, props.info);
     setOptionsInfo(props.info);
 
-    const axisX = document.getElementById("axisX");
-    const axisY = document.getElementById("axisY");
-    const showSpectrogram = document.getElementById("showSpectrogram");
+    const logScale = document.getElementById("logScale");
+    const logBase = document.getElementById("logBase");
+    const showGrid = document.getElementById("showGrid");
+    const spectrogramColor = document.getElementById("spectrogramColor");
+    const stftColor = document.getElementById("stftColor");
     const zooming = document.getElementById("zooming");
     const guideLine = document.getElementById("guideLine");
-    const brushForStatistics = document.getElementById("brushForStatistics");
-    const brushColor = document.getElementById("brushColor");
 
     if (props.currentSlotId !== -1) {
       // 가져온 값들로 설정 값들 갱신
-      axisX.value = props.info.axisX;
-      axisY.value = props.info.axisY;
+      logScale.checked = props.info.logScale;
+      logBase.value = props.info.logBase;
 
-      showSpectrogram.checked = props.info.showSpectrogram;
+      showGrid.checked = props.info.showGrid;
+      spectrogramColor.value = props.info.spectrogramColor;
+      stftColor.value = props.info.stftColor;
+
       zooming.checked = props.info.zooming;
       guideLine.checked = props.info.guideLine;
-      brushForStatistics.checked = props.info.brushForStatistics;
-
-      // TODO
-      // brushColor.value = props.info.brushColor;
     }
   }, [props.info]);
 
@@ -54,10 +54,10 @@ const Setting = (props) => {
     const id = event.target.id;
     let value = event.target.value;
     if (
-      id === "showSpectrogram" ||
+      id === "logScale" ||
+      id === "showGrid" ||
       id === "zooming" ||
-      id === "guideLine" ||
-      id === "brushForStatistics"
+      id === "guideLine"
     ) {
       // Switch 버튼 고려
       value = document.getElementById(id).checked;
@@ -65,6 +65,12 @@ const Setting = (props) => {
       // 숫자 입력 고려
       value = parseFloat(value);
     }
+
+    // Handle User Error
+    if (id === "logBase" && isNaN(value)) {
+      value = 2;
+    }
+
     const newOptionsInfo = {
       ...optionsInfo,
       [id]: value,
@@ -96,27 +102,26 @@ const Setting = (props) => {
           <div id="axis-collapse" class="accordion-collapse collapse">
             <div class="accordion-body ">
               <div class="row d-flex accordion-component align-items-center">
-                <div class="col-md-6 justify-content-start">Axis X</div>
-                <div class="col-md-6 d-flex justify-content-end align-items-center">
+                <div class="col-md-6 justify-content-start">Log Scale</div>
+                <div class="form-check form-switch col-md-6 d-flex justify-content-end align-items-center">
                   <input
-                    type="text"
-                    id="axisX"
-                    class="form-control form-control-sm text-input"
-                    placeholder="Default"
-                    aria-label="axis-x"
+                    class="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    id="logScale"
                     onChange={(event) => dbUpdateData(event)}
                   />
                 </div>
               </div>
               <div class="row d-flex accordion-component align-items-center">
-                <div class="col-md-6 justify-content-start">Axis Y</div>
+                <div class="col-md-6 justify-content-start">Log Base</div>
                 <div class="col-md-6 d-flex justify-content-end align-items-center">
                   <input
                     type="text"
-                    id="axisY"
+                    id="logBase"
                     class="form-control form-control-sm text-input"
-                    placeholder="Default"
-                    aria-label="axis-y"
+                    placeholder="2"
+                    aria-label="log-base"
                     onChange={(event) => dbUpdateData(event)}
                   />
                 </div>
@@ -132,28 +137,84 @@ const Setting = (props) => {
               class="accordion-button collapsed"
               type="button"
               data-bs-toggle="collapse"
-              data-bs-target="#legend-collapse"
+              data-bs-target="#graph-collapse"
               aria-expanded="false"
-              aria-controls="legend-collapse"
+              aria-controls="graph-collapse"
             >
               <FaChartLine class="setting-accordion-icon" />{" "}
               <span class="accordion-label">Graph</span>
             </button>
           </h2>
-          <div id="legend-collapse" class="accordion-collapse collapse">
+          <div id="graph-collapse" class="accordion-collapse collapse">
             <div class="accordion-body">
               <div class="row d-flex accordion-component align-items-center">
-                <div class="col-md-6 justify-content-start">
-                  Show Spectrogram
-                </div>
+                <div class="col-md-6 justify-content-start">Show Grid</div>
                 <div class="form-check form-switch col-md-6 d-flex justify-content-end align-items-center">
                   <input
                     class="form-check-input"
                     type="checkbox"
                     role="switch"
-                    id="showSpectrogram"
+                    id="showGrid"
                     onChange={(event) => dbUpdateData(event)}
                   />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Color Map */}
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="legend-head">
+            <button
+              class="accordion-button collapsed"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#colormap-collapse"
+              aria-expanded="false"
+              aria-controls="colormap-collapse"
+            >
+              <FaPalette class="setting-accordion-icon" />{" "}
+              <span class="accordion-label">Color Map</span>
+            </button>
+          </h2>
+          <div id="colormap-collapse" class="accordion-collapse collapse">
+            <div class="accordion-body">
+              <div class="row d-flex accordion-component align-items-center">
+                <div class="col-md-6 justify-content-start">
+                  Spectrogram Color
+                </div>
+                <div class="col-md-6 d-flex justify-content-end align-items-center">
+                  <select
+                    id="spectrogramColor"
+                    class="form-select form-select-sm legend-box"
+                    onChange={(event) => dbUpdateData(event)}
+                  >
+                    <option value="Viridis">Viridis</option>
+                    <option value="Cividis">Cividis</option>
+                    <option value="Plasma">Plasma</option>
+                    <option value="Turbo">Turbo</option>
+                    <option value="Inferno">Inferno</option>
+                    <option value="CubehelixDefault">CubehelixDefault</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row d-flex accordion-component align-items-center">
+                <div class="col-md-6 justify-content-start">STFT Color</div>
+                <div class="col-md-6 d-flex justify-content-end align-items-center">
+                  <select
+                    id="stftColor"
+                    class="form-select form-select-sm legend-box"
+                    onChange={(event) => dbUpdateData(event)}
+                  >
+                    <option value="Viridis">Viridis</option>
+                    <option value="Cividis">Cividis</option>
+                    <option value="Plasma">Plasma</option>
+                    <option value="Turbo">Turbo</option>
+                    <option value="Inferno">Inferno</option>
+                    <option value="CubehelixDefault">CubehelixDefault</option>
+                  </select>
                 </div>
               </div>
             </div>
@@ -200,20 +261,6 @@ const Setting = (props) => {
                     type="checkbox"
                     role="switch"
                     id="guideLine"
-                    onChange={(event) => dbUpdateData(event)}
-                  />
-                </div>
-              </div>
-              <div class="row d-flex accordion-component align-items-center">
-                <div class="col-md-6 justify-content-start">
-                  Brush (for Statistics)
-                </div>
-                <div class="form-check form-switch col-md-6 d-flex justify-content-end align-items-center">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    role="switch"
-                    id="brushForStatistics"
                     onChange={(event) => dbUpdateData(event)}
                   />
                 </div>
