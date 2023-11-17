@@ -30,11 +30,11 @@ CIR=[] #global data
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
-CORS(app, resources={r'*': {'origins': 'http://localhost:3002'}}, supports_credentials=True)
+CORS(app, resources={r'*': {'origins': 'http://localhost:3000'}}, supports_credentials=True)
 
 # Write your own data file path
-#path = "C:/Users/ASUS/Desktop/InfoVis/Project/awsvs/src/data/"
-path = "/Users/hslee/Desktop/GitMUC/Test/AWSVS/src/data"
+path = "C:/Users/ASUS/Desktop/InfoVis/Project/awsvs/src/data/"
+# path = "/Users/hslee/Desktop/GitMUC/Test/AWSVS/src/data"
 
 # Import Data => Python => Import Data
 @app.route('/upload', methods=['POST'])
@@ -122,12 +122,13 @@ def get_data():
     elif not isSG and not isCWT:
         print("Only STFT")
         # TO DO (STFT)
+        print("To be implemented")
     elif not isSG and not isSTFT:
         print("Only CWT")
         Wavelet = processInfo['wavelet']
         Scale = processInfo['scale']
         resultData, _ = CwtPlot(Timedelayidx,data,Wavelet,Scale)
-        resultData = abs(resultData)
+        resultData = np.squeeze(abs(resultData), axis=1)
         print("spectogram dimension is")
         print("Size of CWT return reulst is",np.shape(resultData))
     elif not isCWT and not isSTFT:
@@ -136,15 +137,6 @@ def get_data():
         Window = processInfo['window']
         DegreeOfPolynomial = processInfo['degreeOfPolynomial']
         resultData = SGfilteringPlot(Timedelayidx,data,Window,DegreeOfPolynomial)
-    elif not isSG:
-        print("CWT & STFT")
-        Wavelet = processInfo['wavelet']
-        Scale = processInfo['scale']
-        fromCWT, _ = CwtPlot(Timedelayidx,data,Wavelet,Scale)
-        fromCWT = abs(fromCWT)
-        print("spectogram dimension is")
-        print("Size of CWT return reulst is",np.shape(fromCWT))
-        # TO DO (STFT)
     elif not isCWT:
         print("SG & STFT")
         # Parse Hyperparameters
@@ -152,6 +144,7 @@ def get_data():
         DegreeOfPolynomial = processInfo['degreeOfPolynomial']
         fromSG = SGfilteringPlot(Timedelayidx,data,Window,DegreeOfPolynomial)
         # TO DO (STFT)
+        print("To be implemented")
     elif not isSTFT:
         print("SG & CWT")
         # Parse Hyperparameters
@@ -161,22 +154,9 @@ def get_data():
         Wavelet = processInfo['wavelet']
         Scale = processInfo['scale']
         resultData, _ = CwtPlot(Timedelayidx,fromSG,Wavelet,Scale)
-        resultData = abs(resultData)
+        resultData = np.squeeze(abs(resultData), axis=1)
         print("spectogram dimension is")
         print("Size of CWT return reulst is",np.shape(resultData))
-    else:
-        print("SG & CWT & STFT")
-        # Parse Hyperparameters
-        Window = processInfo['window']
-        DegreeOfPolynomial = processInfo['degreeOfPolynomial']
-        fromSG = SGfilteringPlot(Timedelayidx,data,Window,DegreeOfPolynomial)
-        Wavelet = processInfo['wavelet']
-        Scale = processInfo['scale']
-        fromCWT, _ = CwtPlot(Timedelayidx,fromSG,Wavelet,Scale)
-        fromCWT = abs(fromCWT)
-        print("spectogram dimension is")
-        print("Size of CWT return reulst is",np.shape(fromCWT))
-        # TO DO (STFT)
 
     result = resultData.tolist()
     return jsonify({'result': result}) # 1D, 2D array ~
