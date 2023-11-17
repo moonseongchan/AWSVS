@@ -1,47 +1,88 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import * as d3 from "d3";
 import { data1 } from "./data";
 
-const LineGraphComponent = (props) => {
-  // const [data, setData] = useState([]);
-
-  const margin = { top: 20, right: 20, bottom: 40, left: 40 };
+const LineGraph = (props) => {
+  // To resize the width of the graph
+  const margin = { top: 10, right: 30, bottom: 20, left: 40 };
   const getGraphWidth = () => {
-        const sidebar = document.getElementById('sidebar-content').getBoundingClientRect().width;
-        const isSidebarNext = window.innerWidth - sidebar < 30 ? false : true;
-        const width = isSidebarNext ? window.innerWidth * 0.69 : window.innerWidth * 0.88;
-        return width;
-    };
+    const sidebar = document
+      .getElementById("sidebar-content")
+      .getBoundingClientRect().width;
+    const isSidebarNext = window.innerWidth - sidebar < 30 ? false : true;
+    const width = isSidebarNext
+      ? window.innerWidth * 0.68
+      : window.innerWidth * 0.9;
+    return width;
+  };
   const handleResize = () => {
     const width = getGraphWidth() - margin.left - margin.right;
     setWidth(width);
   };
 
+  const lineGraphRef = useRef(null);
   const initialWidth = getGraphWidth() - margin.left - margin.right;
   const [width, setWidth] = useState(initialWidth);
-  const height = 200 - margin.top - margin.bottom;
+  const height = 250 - margin.top - margin.bottom;
 
   useEffect(() => {
-    window.addEventListener('resize', handleResize);
-    let data = data1;
+    window.addEventListener("resize", handleResize);
 
-    if (data.length > 0) {
-      const svg = d3.select("#chart");
+    const svg = d3.select(lineGraphRef.current);
+    const raw = props.slot.data;
+    const plot = props.slot.plot;
+    const processing = props.slot.processing;
+    const options = props.slot.options;
 
-      const lineColors = d3.schemeTableau10;
-
+    if (plot.length > 0) {
       // Domain => Time Series
-      const xScale = d3
+      let xScale = d3
         .scaleLinear()
-        .domain([0, data[0].length])
+        .domain([0, plot[0].length])
         .range([0, width]);
 
-      // Domain => Value (Amplitude, Phase, etc.)
-      // Use flat() to find the maximum of all values in data
-      const yScale = d3
-        .scaleLinear()
-        .domain([d3.min(data.flat()), d3.max(data.flat())])
-        .range([height, 0]);
+      let yScale;
+      const minRaw = d3.min(raw.flat());
+      const maxRaw = d3.max(raw.flat());
+      const minPlot = d3.min(plot.flat());
+      const maxPlot = d3.max(plot.flat());
+
+      // Handle Logarithm Axis
+      if (options.logScale && minRaw >= 0 && minPlot >= 0) {
+        // Domain => Value (Amplitude, Phase, etc.)
+        // Use flat() to find the maximum of all values in data
+        yScale = d3
+          .scaleLog()
+          .domain([minPlot, maxPlot])
+          .range([height, 0])
+          .base(options.logBase);
+
+        if (!processing.applyCWT && processing.applySignalDenoising) {
+          yScale = d3
+            .scaleLog()
+            .domain([Math.min(minRaw, minPlot), Math.max(maxRaw, maxPlot)])
+            .range([height, 0])
+            .base(options.logBase);
+        }
+      } else {
+        // Alert
+        if (options.logScale && !(minRaw >= 0 && minPlot >= 0)) {
+          alert(
+            "For using logarithm, domain must be strictly positive or negative"
+          );
+        }
+
+        yScale = d3.scaleLinear().domain([minPlot, maxPlot]).range([height, 0]);
+
+        if (!processing.applyCWT && processing.applySignalDenoising) {
+          yScale = d3
+            .scaleLinear()
+            .domain([Math.min(minRaw, minPlot), Math.max(maxRaw, maxPlot)])
+            .range([height, 0]);
+        }
+      }
+
+      const lineColors = d3.schemeTableau10;
 
       const line = d3
         .line()
@@ -50,22 +91,44 @@ const LineGraphComponent = (props) => {
 
       svg.selectAll("*").remove();
 
-      svg
+      // Grid
+      const xAxis = d3.axisBottom(xScale);
+      const yAxis = d3.axisLeft(yScale);
+
+      if (options.showGrid) {
+        svg
+          .append("g")
+          .attr("transform", `translate(${margin.left},${margin.top + height})`)
+          .call(xAxis.tickSize(-height).tickFormat(""))
+          .attr("stroke", "#d0d0d0")
+          .attr("opacity", ".2");
+
+        svg
+          .append("g")
+          .attr("transform", `translate(${margin.left},${margin.top})`)
+          .call(yAxis.tickSize(-width).tickFormat(""))
+          .attr("stroke", "#d0d0d0")
+          .attr("opacity", ".2");
+      }
+
+      // Axis
+      const xAxisG = svg
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top + height})`)
         .call(d3.axisBottom(xScale));
 
-      svg
+      const yAxisG = svg
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`)
         .call(d3.axisLeft(yScale));
 
+      // Plot Lines
       const graph = svg
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
       // Create a line graph for each data array in the data array
-      data.forEach((d, idx) => {
+      plot.forEach((d, idx) => {
         graph
           .append("path")
           .datum(d)
@@ -74,17 +137,49 @@ const LineGraphComponent = (props) => {
           .attr("stroke-width", 1.5)
           .attr("d", line);
       });
+
+      if (!processing.applyCWT && processing.applySignalDenoising) {
+        // Raw Data 고정 (Signal Denoising만 On되어 있을 때)
+        raw.forEach((d, idx) => {
+          graph
+            .append("path")
+            .datum(d)
+            .attr("fill", "none")
+            .attr("stroke", lineColors[idx % lineColors.length])
+            .attr("stroke-width", 2)
+            .attr("opacity", "0.5")
+            .attr("d", line);
+        });
+      }
+
+      if (options.zomming) {
+        // Zoomming
+        // TODO
+      }
+
+      if (options.guideLine) {
+        // Guide Line
+        // TODO
+      }
     }
-  }, [width]);
+  }, [width, props.slot]);
 
   return (
-    <div>
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+      }}
+    >
       <svg
-        id="chart"
-        width={width}
+        ref={lineGraphRef}
+        width={width + margin.left + margin.right}
         height={height + margin.top + margin.bottom}
       ></svg>
     </div>
   );
 };
-export default LineGraphComponent;
+
+export default LineGraph;

@@ -21,23 +21,24 @@ export default function App() {
       // 원본 Data
       data: [],
       processing: {
-        applySignalDenoising : false,
-        window: 3,
+        applySignalDenoising: false,
+        // Window has to be odd number
+        window: 19,
         // Window > Degree of Polynomial
-        degreeOfPolynomial: 1,
+        degreeOfPolynomial: 8,
         applySTFT: false,
         applyCWT: false,
         wavelet: "cgau1",
-        scale: 2,
+        scale: 32,
       },
       options: {
-        axisX: null,
-        axisY: null,
-        showSpectrogram: false,
+        logScale: false,
+        logBase: 2,
+        showGrid: false,
+        spectrogramColor: "Viridis",
+        stftColor: "Viridis",
         zooming: false,
         guideLine: false,
-        brushForStatistics: false,
-        brushColor: null,
       },
       // Dashboard에 시각화 할 Data
       plot: [],
