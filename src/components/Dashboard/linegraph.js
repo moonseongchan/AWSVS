@@ -33,7 +33,6 @@ const LineGraph = (props) => {
     const plot = props.slot.plot;
     const processing = props.slot.processing;
     const options = props.slot.options;
-
     if (plot.length > 0) {
       // Domain => Time Series
       let xScale = d3
@@ -152,9 +151,51 @@ const LineGraph = (props) => {
         });
       }
 
-      if (options.zomming) {
-        // Zoomming
-        // TODO
+
+
+      if (options.zooming) {
+        //set zoom behavior
+        const zoomBehavior = d3
+            .zoom()
+            .scaleExtent([1, 8])
+            .extent([[0, 0], [width, height]])
+            .on('zoom', onZoomed);
+        svg.call(zoomBehavior);
+        //set handler
+        function onZoomed(event) {
+          svg.selectAll('*').remove();
+          const newXScale = event.transform.rescaleX(xScale);
+          const newline = d3
+              .line()
+              .x((d, i) => newXScale(i) < 0 ? 0 :
+                  newXScale(i) > width ? newXScale(512) - margin : newXScale(i))
+              .y((d) => yScale(d));
+          const lineColors = d3.schemeTableau10;
+          const graph = svg
+              .append("g")
+              .attr("transform", `translate(${margin.left},${margin.top})`);
+
+          svg
+              .append("g")
+              .attr("transform", `translate(${margin.left},${margin.top + height})`)
+              .call(d3.axisBottom(newXScale));
+          svg
+              .append("g")
+              .attr("transform", `translate(${margin.left},${margin.top})`)
+              .call(d3.axisLeft(yScale));
+
+          plot.forEach((d, idx) => {
+            graph
+                .append("path")
+                .datum(d)
+                .attr("fill", "none")
+                .attr("stroke", lineColors[idx % lineColors.length])
+                .attr("stroke-width", 1.5)
+                .attr("d", newline);
+          });
+        }
+      } else {
+        svg.on('.zoom', null);
       }
 
       if (options.guideLine) {
