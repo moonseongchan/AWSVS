@@ -79,7 +79,7 @@ const Setting = (props) => {
     props.getUpdatedData("options", newOptionsInfo);
   };
 
-  let dbUpdateData = debounce(updateData, 250);
+  let dbUpdateData = debounce(updateData, 100);
 
   return (
     <div class="tab-pane fade" id="pills-setting" role="tabpanel" tabindex="0">
