@@ -33,6 +33,7 @@ const LineGraph = (props) => {
     const plot = props.slot.plot;
     const processing = props.slot.processing;
     const options = props.slot.options;
+
     if (plot.length > 0) {
       // Domain => Time Series
       let xScale = d3
@@ -90,32 +91,13 @@ const LineGraph = (props) => {
 
       svg.selectAll("*").remove();
 
-      // Grid
+      // Axis
       const xAxis = d3.axisBottom(xScale);
       const yAxis = d3.axisLeft(yScale);
-
-      if (options.showGrid) {
-        svg
-          .append("g")
-          .attr("transform", `translate(${margin.left},${margin.top + height})`)
-          .call(xAxis.tickSize(-height).tickFormat(""))
-          .attr("stroke", "#d0d0d0")
-          .attr("opacity", ".2");
-
-        svg
-          .append("g")
-          .attr("transform", `translate(${margin.left},${margin.top})`)
-          .call(yAxis.tickSize(-width).tickFormat(""))
-          .attr("stroke", "#d0d0d0")
-          .attr("opacity", ".2");
-      }
-
-      // Axis
       const xAxisG = svg
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top + height})`)
         .call(d3.axisBottom(xScale));
-
       const yAxisG = svg
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`)
@@ -137,8 +119,8 @@ const LineGraph = (props) => {
           .attr("d", line);
       });
 
+      // Not CWT, but SG, Plot Raw Data for Comparison
       if (!processing.applyCWT && processing.applySignalDenoising) {
-        // Raw Data 고정 (Signal Denoising만 On되어 있을 때)
         raw.forEach((d, idx) => {
           graph
             .append("path")
@@ -151,56 +133,129 @@ const LineGraph = (props) => {
         });
       }
 
+      // Grid Lines
+      if (options.showGrid) {
+        svg
+          .append("g")
+          .attr("transform", `translate(${margin.left},${margin.top + height})`)
+          // .transition().duration(2000)
+          .call(xAxis.tickSize(-height).tickFormat(""))
+          .attr("stroke", "#d0d0d0")
+          .attr("opacity", ".2");
 
+        svg
+          .append("g")
+          .attr("transform", `translate(${margin.left},${margin.top})`)
+          // .transition().duration(2000)
+          .call(yAxis.tickSize(-width).tickFormat(""))
+          .attr("stroke", "#d0d0d0")
+          .attr("opacity", ".2");
+      }
 
+      // Guide Line Interaction
+      if (options.guideLine) {
+        // TODO
+      }
+
+      // Zooming Interaction
       if (options.zooming) {
-        //set zoom behavior
+        // Set Zoom Behavior
         const zoomBehavior = d3
-            .zoom()
-            .scaleExtent([1, 8])
-            .extent([[0, 0], [width, height]])
-            .on('zoom', onZoomed);
+          .zoom()
+          .scaleExtent([0, 10])
+          .extent([
+            [0, 0],
+            [width, height],
+          ])
+          .on("zoom", onZoomed);
         svg.call(zoomBehavior);
-        //set handler
+
+        // Set Handler
         function onZoomed(event) {
-          svg.selectAll('*').remove();
+          svg.selectAll("*").remove();
           const newXScale = event.transform.rescaleX(xScale);
-          const newline = d3
-              .line()
-              .x((d, i) => newXScale(i) < 0 ? 0 :
-                  newXScale(i) > width ? newXScale(512) - margin : newXScale(i))
-              .y((d) => yScale(d));
           const lineColors = d3.schemeTableau10;
+          const newline = d3
+            .line()
+            .x((d, i) =>
+              newXScale(i) < 0
+                ? 0
+                : newXScale(i) > width
+                ? newXScale(512) - margin
+                : newXScale(i)
+            )
+            .y((d) => yScale(d));
+
           const graph = svg
-              .append("g")
-              .attr("transform", `translate(${margin.left},${margin.top})`);
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
 
           svg
-              .append("g")
-              .attr("transform", `translate(${margin.left},${margin.top + height})`)
-              .call(d3.axisBottom(newXScale));
+            .append("g")
+            .attr(
+              "transform",
+              `translate(${margin.left},${margin.top + height})`
+            )
+            .call(d3.axisBottom(newXScale));
+
           svg
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`)
+            .call(d3.axisLeft(yScale));
+
+          const xAxis = d3.axisBottom(newXScale);
+          const yAxis = d3.axisLeft(yScale);
+
+          if (options.showGrid) {
+            svg
+              .append("g")
+              .attr(
+                "transform",
+                `translate(${margin.left},${margin.top + height})`
+              )
+              .call(xAxis.tickSize(-height).tickFormat(""))
+              .attr("stroke", "#d0d0d0")
+              .attr("opacity", ".2");
+
+            svg
               .append("g")
               .attr("transform", `translate(${margin.left},${margin.top})`)
-              .call(d3.axisLeft(yScale));
+              .call(yAxis.tickSize(-width).tickFormat(""))
+              .attr("stroke", "#d0d0d0")
+              .attr("opacity", ".2");
+          }
 
           plot.forEach((d, idx) => {
             graph
+              .append("path")
+              .datum(d)
+              .attr("fill", "none")
+              .attr("stroke", lineColors[idx % lineColors.length])
+              .attr("stroke-width", 1.5)
+              .attr("d", newline);
+          });
+
+          if (!processing.applyCWT && processing.applySignalDenoising) {
+            // Raw Data 고정 (Signal Denoising만 On되어 있을 때)
+            raw.forEach((d, idx) => {
+              graph
                 .append("path")
                 .datum(d)
                 .attr("fill", "none")
                 .attr("stroke", lineColors[idx % lineColors.length])
-                .attr("stroke-width", 1.5)
+                .attr("stroke-width", 2)
+                .attr("opacity", "0.5")
                 .attr("d", newline);
-          });
+            });
+          }
+        }
+
+        if (options.guideLine) {
+          // Guide Line
+          // TODO
         }
       } else {
-        svg.on('.zoom', null);
-      }
-
-      if (options.guideLine) {
-        // Guide Line
-        // TODO
+        svg.on(".zoom", null);
       }
     }
   }, [width, props.slot]);
