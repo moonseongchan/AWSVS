@@ -134,7 +134,7 @@ const LineGraph = (props) => {
       }
 
       // Grid Lines
-      if (options.showGrid) {
+      if (options.showGrid && !options.zomming) {
         svg
           .append("g")
           .attr("transform", `translate(${margin.left},${margin.top + height})`)
@@ -162,7 +162,11 @@ const LineGraph = (props) => {
         // Set Zoom Behavior
         const zoomBehavior = d3
           .zoom()
-          .scaleExtent([0, 10])
+          .scaleExtent([0, 8])
+          .translateExtent([
+            [0, 0],
+            [width, height],
+          ])
           .extent([
             [0, 0],
             [width, height],
@@ -180,8 +184,8 @@ const LineGraph = (props) => {
             .x((d, i) =>
               newXScale(i) < 0
                 ? 0
-                : newXScale(i) > width
-                ? newXScale(512) - margin
+                : newXScale(i) >= width
+                ? newXScale(plot[0].length) - margin
                 : newXScale(i)
             )
             .y((d) => yScale(d));
@@ -203,7 +207,7 @@ const LineGraph = (props) => {
             .attr("transform", `translate(${margin.left},${margin.top})`)
             .call(d3.axisLeft(yScale));
 
-          const xAxis = d3.axisBottom(newXScale);
+          const newXAxis = d3.axisBottom(newXScale);
           const yAxis = d3.axisLeft(yScale);
 
           if (options.showGrid) {
@@ -213,7 +217,7 @@ const LineGraph = (props) => {
                 "transform",
                 `translate(${margin.left},${margin.top + height})`
               )
-              .call(xAxis.tickSize(-height).tickFormat(""))
+              .call(newXAxis.tickSize(-height).tickFormat(""))
               .attr("stroke", "#d0d0d0")
               .attr("opacity", ".2");
 
