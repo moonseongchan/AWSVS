@@ -120,7 +120,7 @@ const Processing = (props) => {
     props.getUpdatedData("processing", newProcessInfo);
   };
 
-  let dbUpdateData = debounce(updateData, 100);
+  let dbUpdateData = debounce(updateData, 200);
 
   return (
     <div
