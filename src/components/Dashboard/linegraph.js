@@ -35,9 +35,10 @@ const LineGraph = (props) => {
     const options = props.slot.options;
 
     if (plot.length > 0) {
-      // Domain => Time Series
+      //// Scale
       let xScale = d3
         .scaleLinear()
+        // Domain => Time Series
         .domain([0, plot[0].length])
         .range([0, width]);
 
@@ -47,7 +48,7 @@ const LineGraph = (props) => {
       const minPlot = d3.min(plot.flat());
       const maxPlot = d3.max(plot.flat());
 
-      // Handle Logarithm Axis
+      //// Logarithm Axis
       if (options.logScale && minRaw >= 0 && minPlot >= 0) {
         // Domain => Value (Amplitude, Phase, etc.)
         // Use flat() to find the maximum of all values in data
@@ -91,7 +92,7 @@ const LineGraph = (props) => {
 
       svg.selectAll("*").remove();
 
-      // Axis
+      //// Axis
       const xAxis = d3.axisBottom(xScale);
       const yAxis = d3.axisLeft(yScale);
       const xAxisG = svg
@@ -103,7 +104,7 @@ const LineGraph = (props) => {
         .attr("transform", `translate(${margin.left},${margin.top})`)
         .call(d3.axisLeft(yScale));
 
-      // Plot Lines
+      //// Plot Lines
       const graph = svg
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
@@ -119,7 +120,7 @@ const LineGraph = (props) => {
           .attr("d", line);
       });
 
-      // Not CWT, but SG, Plot Raw Data for Comparison
+      //// Not CWT, but SG, Plot Raw Data for Comparison
       if (!processing.applyCWT && processing.applySignalDenoising) {
         raw.forEach((d, idx) => {
           graph
@@ -133,7 +134,7 @@ const LineGraph = (props) => {
         });
       }
 
-      // Grid Lines
+      //// Grid
       if (options.showGrid && !options.zomming) {
         svg
           .append("g")
@@ -152,113 +153,116 @@ const LineGraph = (props) => {
           .attr("opacity", ".2");
       }
 
-      // Guide Line Interaction
+      //// Guide Line Interaction
       if (options.guideLine) {
         // TODO
       }
 
-      // Zooming Interaction
-      if (options.zooming) {
-        // Set Zoom Behavior
-        const zoomBehavior = d3
-          .zoom()
-          .scaleExtent([0, 8])
-          .translateExtent([
-            [0, 0],
-            [width, height],
-          ])
-          .extent([
-            [0, 0],
-            [width, height],
-          ])
-          .on("zoom", onZoomed);
-        svg.call(zoomBehavior);
+      //// Zooming Interaction
+      const zoomBehavior = d3
+        .zoom()
+        .scaleExtent([1, 8])
+        .translateExtent([
+          [0, 0],
+          [width, height],
+        ])
+        .extent([
+          [0, 0],
+          [width, height],
+        ])
+        .on("zoom", onZoomed);
 
-        // Set Handler
-        function onZoomed(event) {
-          svg.selectAll("*").remove();
-          const newXScale = event.transform.rescaleX(xScale);
-          const lineColors = d3.schemeTableau10;
-          const newline = d3
-            .line()
-            .x((d, i) =>
-              newXScale(i) < 0
-                ? 0
-                : newXScale(i) >= width
-                ? newXScale(plot[0].length) - margin
-                : newXScale(i)
-            )
-            .y((d) => yScale(d));
+      // Initialize Zoom Behavior
+      svg.call(zoomBehavior.scaleTo, 1);
 
-          const graph = svg
-            .append("g")
-            .attr("transform", `translate(${margin.left},${margin.top})`);
+      // Set Zooming Handler
+      function onZoomed(event) {
+        svg.selectAll("*").remove();
+        const newXScale = event.transform.rescaleX(xScale);
+        const lineColors = d3.schemeTableau10;
+        const newline = d3
+          .line()
+          .x((d, i) =>
+            newXScale(i) < 0
+              ? 0
+              : newXScale(i) >= width
+              ? newXScale(plot[0].length) - margin
+              : newXScale(i)
+          )
+          .y((d) => yScale(d));
 
+        const graph = svg
+          .append("g")
+          .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        svg
+          .append("g")
+          .attr("transform", `translate(${margin.left},${margin.top + height})`)
+          .call(d3.axisBottom(newXScale));
+
+        svg
+          .append("g")
+          .attr("transform", `translate(${margin.left},${margin.top})`)
+          .call(d3.axisLeft(yScale));
+
+        const newXAxis = d3.axisBottom(newXScale);
+        const yAxis = d3.axisLeft(yScale);
+
+        if (options.showGrid) {
           svg
             .append("g")
             .attr(
               "transform",
               `translate(${margin.left},${margin.top + height})`
             )
-            .call(d3.axisBottom(newXScale));
+            .call(newXAxis.tickSize(-height).tickFormat(""))
+            .attr("stroke", "#d0d0d0")
+            .attr("opacity", ".2");
 
           svg
             .append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`)
-            .call(d3.axisLeft(yScale));
+            .call(yAxis.tickSize(-width).tickFormat(""))
+            .attr("stroke", "#d0d0d0")
+            .attr("opacity", ".2");
+        }
 
-          const newXAxis = d3.axisBottom(newXScale);
-          const yAxis = d3.axisLeft(yScale);
+        if (options.guideLine) {
+          // TODO
+        }
 
-          if (options.showGrid) {
-            svg
-              .append("g")
-              .attr(
-                "transform",
-                `translate(${margin.left},${margin.top + height})`
-              )
-              .call(newXAxis.tickSize(-height).tickFormat(""))
-              .attr("stroke", "#d0d0d0")
-              .attr("opacity", ".2");
+        plot.forEach((d, idx) => {
+          graph
+            .append("path")
+            .datum(d)
+            .attr("fill", "none")
+            .attr("stroke", lineColors[idx % lineColors.length])
+            .attr("stroke-width", 1.5)
+            .attr("d", newline);
+        });
 
-            svg
-              .append("g")
-              .attr("transform", `translate(${margin.left},${margin.top})`)
-              .call(yAxis.tickSize(-width).tickFormat(""))
-              .attr("stroke", "#d0d0d0")
-              .attr("opacity", ".2");
-          }
-
-          plot.forEach((d, idx) => {
+        if (!processing.applyCWT && processing.applySignalDenoising) {
+          // Raw Data 고정 (Signal Denoising만 On되어 있을 때)
+          raw.forEach((d, idx) => {
             graph
               .append("path")
               .datum(d)
               .attr("fill", "none")
               .attr("stroke", lineColors[idx % lineColors.length])
-              .attr("stroke-width", 1.5)
+              .attr("stroke-width", 2)
+              .attr("opacity", "0.5")
               .attr("d", newline);
           });
-
-          if (!processing.applyCWT && processing.applySignalDenoising) {
-            // Raw Data 고정 (Signal Denoising만 On되어 있을 때)
-            raw.forEach((d, idx) => {
-              graph
-                .append("path")
-                .datum(d)
-                .attr("fill", "none")
-                .attr("stroke", lineColors[idx % lineColors.length])
-                .attr("stroke-width", 2)
-                .attr("opacity", "0.5")
-                .attr("d", newline);
-            });
-          }
         }
+      }
 
-        if (options.guideLine) {
-          // Guide Line
-          // TODO
-        }
+      // Handle Zooming Interaction Event
+      if (options.zooming) {
+        // Set Zoom Behavior
+        svg.call(zoomBehavior);
       } else {
+        // Initialize Zoom Behavior
+        svg.call(zoomBehavior.scaleTo, 1);
         svg.on(".zoom", null);
       }
     }
