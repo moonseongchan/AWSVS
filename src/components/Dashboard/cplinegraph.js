@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import * as d3 from "d3";
-import { data1 } from "./data";
 
-const LineGraph = (props) => {
+const CompareLineGraph = (props) => {
   // To resize the width of the graph
   const margin = { top: 10, right: 30, bottom: 20, left: 40 };
   const getGraphWidth = () => {
@@ -20,7 +19,7 @@ const LineGraph = (props) => {
     setWidth(width);
   };
 
-  const lineGraphRef = useRef(null);
+  const cpLineGraphRef = useRef(null);
   const initialWidth = getGraphWidth() - margin.left - margin.right;
   const [width, setWidth] = useState(initialWidth);
   const height = 250 - margin.top - margin.bottom;
@@ -28,31 +27,36 @@ const LineGraph = (props) => {
   useEffect(() => {
     window.addEventListener("resize", handleResize);
 
-    const svg = d3.select(lineGraphRef.current);
+    const svg = d3.select(cpLineGraphRef.current);
 
     // Initialize
-    const raw = props.slot.data.map((list) => {
+    const currentSlot = props.slot;
+    const targetSlot = props.slots.filter(
+      (slot) => slot.id === props.targetId
+    )[0];
+
+    const currentSD = currentSlot.sd.map((list) => {
       return list.map((item) => Math.abs(item));
     });
-    const plot = props.slot.plot.map((list) => {
+    const targetSD = targetSlot.sd.map((list) => {
       return list.map((item) => Math.abs(item));
     });
-    const processing = props.slot.processing;
+
     const options = props.slot.options;
 
-    if (plot.length > 0) {
+    if (currentSD.length > 0 && targetSD.length > 0) {
       //// Scale
       let xScale = d3
         .scaleLinear()
         // Domain => Time Series
-        .domain([0, plot[0].length])
+        .domain([0, currentSD[0].length])
         .range([0, width]);
 
       let yScale;
-      const minRaw = d3.min(raw.flat());
-      const maxRaw = d3.max(raw.flat());
-      const minPlot = d3.min(plot.flat());
-      const maxPlot = d3.max(plot.flat());
+      const minCurrent = d3.min(currentSD.flat());
+      const maxCurrent = d3.max(currentSD.flat());
+      const minTarget = d3.min(targetSD.flat());
+      const maxTarget = d3.max(targetSD.flat());
 
       //// Logarithm Axis
       if (options.logScale) {
@@ -60,26 +64,20 @@ const LineGraph = (props) => {
         // Use flat() to find the maximum of all values in data
         yScale = d3
           .scaleLog()
-          .domain([minPlot, maxPlot])
+          .domain([
+            Math.min(minCurrent, minTarget),
+            Math.max(maxCurrent, maxTarget),
+          ])
           .range([height, 0])
           .base(options.logBase);
-
-        if (!processing.applyCWT && processing.applySignalDenoising) {
-          yScale = d3
-            .scaleLog()
-            .domain([Math.min(minRaw, minPlot), Math.max(maxRaw, maxPlot)])
-            .range([height, 0])
-            .base(options.logBase);
-        }
       } else {
-        yScale = d3.scaleLinear().domain([minPlot, maxPlot]).range([height, 0]);
-
-        if (!processing.applyCWT && processing.applySignalDenoising) {
-          yScale = d3
-            .scaleLinear()
-            .domain([Math.min(minRaw, minPlot), Math.max(maxRaw, maxPlot)])
-            .range([height, 0]);
-        }
+        yScale = d3
+          .scaleLinear()
+          .domain([
+            Math.min(minCurrent, minTarget),
+            Math.max(maxCurrent, maxTarget),
+          ])
+          .range([height, 0]);
       }
 
       svg.selectAll("*").remove();
@@ -137,13 +135,26 @@ const LineGraph = (props) => {
         svg.selectAll("*").remove();
         const newXScale = event.transform.rescaleX(xScale);
         const lineColors = d3.schemeTableau10;
+
+        const area = d3
+          .area()
+          .x((d, i) =>
+            newXScale(i) < 0
+              ? 0
+              : newXScale(i) >= width
+              ? newXScale(currentSD[0].length) - margin
+              : newXScale(i)
+          )
+          .y0(yScale(0))
+          .y1((d) => yScale(d));
+
         const line = d3
           .line()
           .x((d, i) =>
             newXScale(i) < 0
               ? 0
               : newXScale(i) >= width
-              ? newXScale(plot[0].length) - margin
+              ? newXScale(currentSD[0].length) - margin
               : newXScale(i)
           )
           .y((d) => yScale(d));
@@ -184,30 +195,69 @@ const LineGraph = (props) => {
             .attr("opacity", ".2");
         }
 
-        plot.forEach((d, idx) => {
+        // Plot Area
+        // if (maxTarget > maxCurrent) {
+        //   targetSD.forEach((d) => {
+        //     graph
+        //       .append("path")
+        //       .datum(d)
+        //       .attr("fill", lineColors[2])
+        //       .attr("stroke", lineColors[2])
+        //       .attr("stroke-width", 1.5)
+        //       .attr("d", area);
+        //   });
+
+        //   currentSD.forEach((d) => {
+        //     graph
+        //       .append("path")
+        //       .datum(d)
+        //       .attr("fill", lineColors[0])
+        //       .attr("stroke", lineColors[0])
+        //       .attr("stroke-width", 1.5)
+        //       .attr("d", area);
+        //   });
+        // } else {
+        //   currentSD.forEach((d) => {
+        //     graph
+        //       .append("path")
+        //       .datum(d)
+        //       .attr("fill", lineColors[0])
+        //       .attr("stroke", lineColors[0])
+        //       .attr("stroke-width", 1.5)
+        //       .attr("d", area);
+        //   });
+
+        //   targetSD.forEach((d) => {
+        //     graph
+        //       .append("path")
+        //       .datum(d)
+        //       .attr("fill", lineColors[2])
+        //       .attr("stroke", lineColors[2])
+        //       .attr("stroke-width", 1.5)
+        //       .attr("d", area);
+        //   });
+        // }
+
+        // Plot Line
+        currentSD.forEach((d) => {
           graph
             .append("path")
             .datum(d)
             .attr("fill", "none")
-            .attr("stroke", lineColors[idx % lineColors.length])
+            .attr("stroke", lineColors[0])
             .attr("stroke-width", 2)
             .attr("d", line);
         });
 
-        // Not CWT, but SG, Plot Raw Data for Comparison
-        if (!processing.applyCWT && processing.applySignalDenoising) {
-          // Raw Data 고정 (Signal Denoising만 On되어 있을 때)
-          raw.forEach((d, idx) => {
-            graph
-              .append("path")
-              .datum(d)
-              .attr("fill", "none")
-              .attr("stroke", lineColors[idx % lineColors.length])
-              .attr("stroke-width", 2.5)
-              .attr("opacity", "0.5")
-              .attr("d", line);
-          });
-        }
+        targetSD.forEach((d) => {
+          graph
+            .append("path")
+            .datum(d)
+            .attr("fill", "none")
+            .attr("stroke", lineColors[2])
+            .attr("stroke-width", 2)
+            .attr("d", line);
+        });
       }
 
       // Handle Zooming Interaction Event
@@ -232,7 +282,7 @@ const LineGraph = (props) => {
       }}
     >
       <svg
-        ref={lineGraphRef}
+        ref={cpLineGraphRef}
         width={width + margin.left + margin.right}
         height={height + margin.top + margin.bottom}
       ></svg>
@@ -240,4 +290,4 @@ const LineGraph = (props) => {
   );
 };
 
-export default LineGraph;
+export default CompareLineGraph;

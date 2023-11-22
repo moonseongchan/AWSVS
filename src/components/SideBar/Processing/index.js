@@ -11,6 +11,9 @@ import "./Processing.scss";
 const Processing = (props) => {
   // Process에서 설정할 Factors
   const [processInfo, setProcessInfo] = useState({});
+  const filteredSlots = props.slots.filter(
+    (slot) => slot.id !== props.currentSlotId
+  );
 
   useEffect(() => {
     // console.log("Loaded", props.currentSlotId, props.info);
@@ -25,16 +28,24 @@ const Processing = (props) => {
     const applyCWT = document.getElementById("applyCWT");
     const wavelet = document.getElementById("wavelet");
     const scale = document.getElementById("scale");
+    const compare = document.getElementById("compare");
+    const target = document.getElementById("target");
+    const xFeature = document.getElementById("xFeature");
+    const yFeature = document.getElementById("yFeature");
 
     if (props.currentSlotId !== -1) {
       // 가져온 값들로 설정 값들 갱신
       applySignalDenoising.checked = props.info.applySignalDenoising;
       window.value = props.info.window;
       degreeOfPolynomial.value = props.info.degreeOfPolynomial;
-      applySTFT.checked = props.info.applySTFT;
       applyCWT.checked = props.info.applyCWT;
       wavelet.value = props.info.wavelet;
       scale.value = props.info.scale;
+      applySTFT.checked = props.info.applySTFT;
+      compare.checked = props.info.compare;
+      target.value = props.info.target;
+      xFeature.value = props.info.xFeature;
+      yFeature.value = props.info.yFeature;
     }
 
     // Show Range Slider Values
@@ -75,8 +86,9 @@ const Processing = (props) => {
     let value = event.target.value;
     if (
       id === "applySignalDenoising" ||
+      id === "applyCWT" ||
       id === "applySTFT" ||
-      id === "applyCWT"
+      id === "compare"
     ) {
       // Switch 버튼 고려
       value = document.getElementById(id).checked;
@@ -132,20 +144,20 @@ const Processing = (props) => {
       <div class="accordion mt-2">
         {/* Signal Denoising */}
         <div class="accordion-item">
-          <h2 class="accordion-header" id="data-head">
+          <h2 class="accordion-header" id="sd-head">
             <button
               class="accordion-button collapsed"
               type="button"
               data-bs-toggle="collapse"
-              data-bs-target="#data-collapse"
+              data-bs-target="#sd-collapse"
               aria-expanded="false"
-              aria-controls="data-collapse"
+              aria-controls="sd-collapse"
             >
               <FaSignal class="processing-accordion-icon" />{" "}
               <span class="accordion-label">Signal Denoising</span>
             </button>
           </h2>
-          <div id="data-collapse" class="accordion-collapse collapse">
+          <div id="sd-collapse" class="accordion-collapse collapse">
             <div class="accordion-body ">
               <div class="row d-flex accordion-component align-items-center">
                 <div class="col-md-6 justify-content-start">
@@ -211,21 +223,21 @@ const Processing = (props) => {
 
         {/* CWT */}
         <div class="accordion-item">
-          <h2 class="accordion-header" id="hampel-filter-head">
+          <h2 class="accordion-header" id="cwt-filter-head">
             <button
               class="accordion-button collapsed"
               type="button"
               data-bs-toggle="collapse"
-              data-bs-target="#hampel-filter-collapse"
+              data-bs-target="#cwt-filter-collapse"
               aria-expanded="false"
-              aria-controls="hampel-filter-collapse"
+              aria-controls="cwt-filter-collapse"
             >
               <FaRegImage class="processing-accordion-icon" />{" "}
               <span class="accordion-label">CWT</span>
             </button>
           </h2>
           {/* id와 위에 아코디언 버튼 aria-controls와 동일해야 함 */}
-          <div id="hampel-filter-collapse" class="accordion-collapse collapse">
+          <div id="cwt-filter-collapse" class="accordion-collapse collapse">
             <div class="accordion-body">
               <div class="row d-flex accordion-component align-items-center">
                 <div class="col-md-6 justify-content-start">Apply CWT</div>
@@ -279,31 +291,112 @@ const Processing = (props) => {
 
         {/* STFT */}
         <div class="accordion-item">
-          <h2 class="accordion-header" id="parameter-head">
+          <h2 class="accordion-header" id="stft-head">
             <button
               class="accordion-button collapsed"
               type="button"
               data-bs-toggle="collapse"
-              data-bs-target="#parameter-collapse"
+              data-bs-target="#stft-collapse"
               aria-expanded="false"
-              aria-controls="parameter-collapse"
+              aria-controls="stft-collapse"
             >
               <FaRegChartBar class="processing-accordion-icon" />{" "}
               <span class="accordion-label">STFT</span>
             </button>
           </h2>
-          <div id="parameter-collapse" class="accordion-collapse collapse">
+          <div id="stft-collapse" class="accordion-collapse collapse">
             <div class="accordion-body">
               <div class="row d-flex accordion-component align-items-center">
                 <div class="col-md-6 justify-content-start">Apply STFT</div>
                 <div class="form-check form-switch col-md-6 d-flex justify-content-end align-items-center">
                   <input
-                    class=" form-check-input"
+                    class="form-check-input"
                     type="checkbox"
                     role="switch"
                     id="applySTFT"
                     onChange={(event) => dbUpdateData(event)}
                   />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Comparison */}
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="comparison-head">
+            <button
+              class="accordion-button collapsed"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#comparison-collapse"
+              aria-expanded="false"
+              aria-controls="comparison-collapse"
+            >
+              <FaRegChartBar class="processing-accordion-icon" />{" "}
+              <span class="accordion-label">Comparison</span>
+            </button>
+          </h2>
+          <div id="comparison-collapse" class="accordion-collapse collapse">
+            <div class="accordion-body">
+              <div class="row d-flex accordion-component align-items-center">
+                <div class="col-md-6 justify-content-start">Compare</div>
+                <div class="form-check form-switch col-md-6 d-flex justify-content-end align-items-center">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    id="compare"
+                    onChange={(event) => dbUpdateData(event)}
+                  />
+                </div>
+              </div>
+              <div class="row d-flex accordion-component align-items-center">
+                <div class="col-md-6 justify-content-start">Target</div>
+                <div class="col-md-6 d-flex justify-content-end align-items-center">
+                  <select
+                    id="target"
+                    class="form-select form-select-sm legend-box"
+                    onChange={(event) => dbUpdateData(event)}
+                  >
+                    {filteredSlots.map((slot) => (
+                      <option value={slot.id}>Slot {slot.id}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div class="row d-flex accordion-component align-items-center">
+                <div class="col-md-6 justify-content-start">X Feature</div>
+                <div class="col-md-6 d-flex justify-content-end align-items-center">
+                  <select
+                    id="xFeature"
+                    class="form-select form-select-sm legend-box"
+                    onChange={(event) => dbUpdateData(event)}
+                  >
+                    <option value="cgau1">cgau1</option>
+                    <option value="cmor">cmor</option>
+                    <option value="gaus1">gaus1</option>
+                    <option value="mexh">mexh</option>
+                    <option value="morl">morl</option>
+                    <option value="shan">shan</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row d-flex accordion-component align-items-center">
+                <div class="col-md-6 justify-content-start">Y Feature</div>
+                <div class="col-md-6 d-flex justify-content-end align-items-center">
+                  <select
+                    id="yFeature"
+                    class="form-select form-select-sm legend-box"
+                    onChange={(event) => dbUpdateData(event)}
+                  >
+                    <option value="cgau1">cgau1</option>
+                    <option value="cmor">cmor</option>
+                    <option value="gaus1">gaus1</option>
+                    <option value="mexh">mexh</option>
+                    <option value="morl">morl</option>
+                    <option value="shan">shan</option>
+                  </select>
                 </div>
               </div>
             </div>

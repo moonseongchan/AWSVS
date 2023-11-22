@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import LineGraph from "./linegraph.js";
 import Spectrogram from "./spectrogram.js";
+import CompareLineGraph from "./cplinegraph.js";
+import CompareSpectrogram from "./cpspectrogram.js";
 
 import { AiOutlineClose } from "react-icons/ai";
 import { BiExpandVertical } from "react-icons/bi";
@@ -43,12 +45,12 @@ const Dashboard = (props) => {
               />
             </div>
             <div class="slot-close-section h-100 d-flex justify-content-end align-items-center">
-              <button
+              {/* <button
                 type="button"
                 class="slot-move-btn btn d-flex justify-content-end align-items-center accordion-button collapsed"
               >
                 <BiMenu />
-              </button>
+              </button> */}
               <button
                 type="button"
                 class="slot-toggle-btn btn d-flex justify-content-end align-items-center accordion-button collapsed"
@@ -72,24 +74,38 @@ const Dashboard = (props) => {
           <div id={`slot${slot.id}-body`} class="accordion-collapse collapse">
             <div class="dashboard-body accordion-body">
               {/* Slot Content */}
-              <div class="slot-content row align-items-center d-flex">
+              <div class="slot-content row align-items-center d-flex pb-1">
                 {/* Line Graph */}
-                <div id="line-graph" class="px-0 py-1 mb-1">
-                  {/* 특성 Slot에 따른 Data props로 넘겨주어야 함 (using Slot ID) */}
+                <div id="line-graph" class="px-0 py-1">
                   <LineGraph slot={slot} />
                 </div>
-                <hr class="my-0" />
 
-                {/* Spectrogram */}
-                <div id="spectrogram" class="px-0 py-1 my-1">
-                  <Spectrogram slot={slot} />
-                </div>
-                <hr class="my-0" />
+                {/* Spectrogram (only on status) */}
+                {slot.options.showSpectrogram && (
+                  <div id="spectrogram" class="px-0 py-1">
+                    <Spectrogram slot={slot} />
+                  </div>
+                )}
 
-                {/* Selected Spectrogram */}
-                <div id="selected-spectrogram" class="px-0 py-1 my-1">
-                  <Spectrogram slot={slot} />
-                </div>
+                {/* Comparison (only on status) */}
+                {slot.processing.compare && slot.processing.target !== null && (
+                  <hr class="my-2" />
+                )}
+
+                {slot.processing.compare && slot.processing.target !== null && (
+                  <div id="line-graph" class="px-0 py-1">
+                    <CompareLineGraph
+                      currentId={slot.id}
+                      targetId={slot.processing.target}
+                      slots={slots}
+                      slot={slot}
+                    />
+                  </div>
+                )}
+                
+                {/* <div id="spectrogram" class="px-0 py-0 my-1">
+                      <CompareSpectrogram currentId={slot.id} target={slot.processing.target} slots={slots}/>
+                    </div> */}
 
                 {/* PCA & Cluster */}
                 {/* <div

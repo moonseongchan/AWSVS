@@ -10,7 +10,7 @@ export default function App() {
   const [idx, setIdx] = useState(0);
 
   const getUpdatedSlots = (value) => {
-    console.log(value);
+    // console.log(value);
     setSlots(value);
   };
 
@@ -18,8 +18,15 @@ export default function App() {
     // 초기 Slot 정보
     const newSlot = {
       id: idx + 1,
-      // 원본 Data
+      // Raw Data
       data: [],
+      // Dashboard에 시각화 할 Data
+      plot: [],
+      // Comparison을 위한 Signal Denoising 처리한 Data
+      sd: [],
+      // Comparison을 위한 CWT 처리한 Data
+      cwt: [],
+      // Processing
       processing: {
         applySignalDenoising: false,
         // Window has to be odd number
@@ -30,18 +37,24 @@ export default function App() {
         applyCWT: false,
         wavelet: "cgau1",
         scale: 32,
+        // For Comparison
+        compare: false,
+        target: null,
+        // TO-DO
+        xFeature: null,
+        yFeature: null
       },
+      // Setting
       options: {
         logScale: false,
         logBase: 2,
         showGrid: false,
+        showSpectrogram: false,
         spectrogramColor: "Viridis",
         stftColor: "Viridis",
         zooming: false,
         guideLine: false,
       },
-      // Dashboard에 시각화 할 Data
-      plot: [],
     };
     setIdx(idx + 1);
     setSlots([...slots, newSlot]);

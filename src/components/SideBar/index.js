@@ -45,6 +45,72 @@ const SideBar = (props) => {
           }
           return slot;
         });
+
+        ///////////////////////////////////////
+        // Signal Denoising for Comparison (Default 파라미터 설정)
+        ///////////////////////////////////////
+        const sdFormData = new FormData();
+        sdFormData.append("data", JSON.stringify(value));
+        sdFormData.append(
+          "processing",
+          JSON.stringify({
+            applySignalDenoising: true,
+            window: 19,
+            degreeOfPolynomial: 8,
+            applySTFT: false,
+            applyCWT: false,
+            wavelet: "cgau1",
+            scale: 32,
+            compare: false,
+            target: null,
+            xFeature: null,
+            yFeature: null,
+          })
+        );
+        const sdResponse = await axios.post(
+          "http://localhost:5000/get",
+          sdFormData,
+          { withCredentials: true }
+        );
+        newSlots = newSlots.map((slot) => {
+          if (slot.id === currentSlotId) {
+            return { ...slot, sd: sdResponse.data.result };
+          }
+          return slot;
+        });
+
+        ///////////////////////////////////////
+        // CWT for Comparison (Default 파라미터 설정)
+        ///////////////////////////////////////
+        const cwtFormData = new FormData();
+        cwtFormData.append("data", JSON.stringify(value));
+        cwtFormData.append(
+          "processing",
+          JSON.stringify({
+            applySignalDenoising: false,
+            window: 19,
+            degreeOfPolynomial: 8,
+            applySTFT: false,
+            applyCWT: true,
+            wavelet: "cgau1",
+            scale: 32,
+            compare: false,
+            target: null,
+            xFeature: null,
+            yFeature: null,
+          })
+        );
+        const cwtResponse = await axios.post(
+          "http://localhost:5000/get",
+          sdFormData,
+          { withCredentials: true }
+        );
+        newSlots = newSlots.map((slot) => {
+          if (slot.id === currentSlotId) {
+            return { ...slot, cwt: cwtResponse.data.result };
+          }
+          return slot;
+        });
       } else if (key === "processing") {
         newSlots = slots.map((slot) => {
           if (slot.id === currentSlotId) {
@@ -108,7 +174,7 @@ const SideBar = (props) => {
         setCurrentSlotId(-1);
         setCurrentSlotLabel("Select Slot");
       } else {
-        console.log(currentSlotId);
+        // console.log(currentSlotId);
         const selectedSlot = slots.filter((slot) => slot.id === currentSlotId);
         const newProcessInfo = selectedSlot[0].processing;
         const optionsInfo = selectedSlot[0].options;
@@ -196,6 +262,7 @@ const SideBar = (props) => {
           />
           <Processing
             currentSlotId={currentSlotId}
+            slots={slots}
             info={processInfo}
             getUpdatedData={getUpdatedData}
           />
