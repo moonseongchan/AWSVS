@@ -40,7 +40,7 @@ export default function App() {
         // For Comparison
         compare: false,
         target: null,
-        // TO-DO
+        // TO-DO (기본값 변경)
         xFeature: null,
         yFeature: null
       },
@@ -53,7 +53,7 @@ export default function App() {
         spectrogramColor: "Viridis",
         stftColor: "Viridis",
         zooming: false,
-        guideLine: false,
+        thresholdLine: false,
       },
     };
     setIdx(idx + 1);

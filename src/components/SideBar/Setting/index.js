@@ -23,6 +23,7 @@ const Setting = (props) => {
     const spectrogramColor = document.getElementById("spectrogramColor");
     const stftColor = document.getElementById("stftColor");
     const zooming = document.getElementById("zooming");
+    const thresholdLine = document.getElementById("thresholdLine");
 
     if (props.currentSlotId !== -1) {
       // 가져온 값들로 설정 값들 갱신
@@ -35,6 +36,7 @@ const Setting = (props) => {
       stftColor.value = props.info.stftColor;
 
       zooming.checked = props.info.zooming;
+      thresholdLine.checked = props.info.thresholdLine;
     }
   }, [props.info]);
 
@@ -57,7 +59,8 @@ const Setting = (props) => {
       id === "logScale" ||
       id === "showSpectrogram" ||
       id === "showGrid" ||
-      id === "zooming"
+      id === "zooming" ||
+      id === "thresholdLine"
     ) {
       // Switch 버튼 고려
       value = document.getElementById(id).checked;
@@ -263,6 +266,18 @@ const Setting = (props) => {
                     type="checkbox"
                     role="switch"
                     id="zooming"
+                    onChange={(event) => dbUpdateData(event)}
+                  />
+                </div>
+              </div>
+              <div class="row d-flex accordion-component align-items-center">
+                <div class="col-md-6 justify-content-start">Threshold Line</div>
+                <div class="form-check form-switch col-md-6 d-flex justify-content-end align-items-center">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    id="thresholdLine"
                     onChange={(event) => dbUpdateData(event)}
                   />
                 </div>

@@ -54,32 +54,30 @@ const LineGraph = (props) => {
       const minPlot = d3.min(plot.flat());
       const maxPlot = d3.max(plot.flat());
 
+      let minValue;
+      let maxValue;
+      if (!processing.applyCWT && processing.applySignalDenoising) {
+        minValue = Math.min(minRaw, minPlot);
+        maxValue = Math.max(maxRaw, maxPlot);
+      } else {
+        minValue = minPlot;
+        maxValue = maxPlot;
+      }
+
       //// Logarithm Axis
       if (options.logScale) {
         // Domain => Value (Amplitude, Phase, etc.)
         // Use flat() to find the maximum of all values in data
         yScale = d3
           .scaleLog()
-          .domain([minPlot, maxPlot])
+          .domain([minValue, maxValue])
           .range([height, 0])
           .base(options.logBase);
-
-        if (!processing.applyCWT && processing.applySignalDenoising) {
-          yScale = d3
-            .scaleLog()
-            .domain([Math.min(minRaw, minPlot), Math.max(maxRaw, maxPlot)])
-            .range([height, 0])
-            .base(options.logBase);
-        }
       } else {
-        yScale = d3.scaleLinear().domain([minPlot, maxPlot]).range([height, 0]);
-
-        if (!processing.applyCWT && processing.applySignalDenoising) {
-          yScale = d3
-            .scaleLinear()
-            .domain([Math.min(minRaw, minPlot), Math.max(maxRaw, maxPlot)])
-            .range([height, 0]);
-        }
+        yScale = d3
+          .scaleLinear()
+          .domain([minValue, maxValue])
+          .range([height, 0]);
       }
 
       svg.selectAll("*").remove();
@@ -207,6 +205,46 @@ const LineGraph = (props) => {
               .attr("opacity", "0.5")
               .attr("d", line);
           });
+        }
+
+        // Threshold Line (Drag)
+        const dragStarted = (event, d) => {
+          d3.select(".threshold-line").raise().attr("stroke", "gray");
+        };
+
+        const dragged = (event, d) => {
+          let yPos = Math.max(0, Math.min(height, event.y));
+          d3.select(".threshold-line").attr("y1", yPos).attr("y2", yPos);
+        };
+
+        const dragEnded = (event, d) => {
+          d3.select(".threshold-line").attr("stroke", "orangered");
+        };
+
+        if (options.thresholdLine) {
+          graph
+            .append("line")
+            .attr("class", "threshold-line")
+            .attr("x1", (d, i) =>
+              newXScale(i) < 0
+                ? 0
+                : newXScale(i) >= width
+                ? newXScale(plot[0].length) - margin
+                : newXScale(i)
+            )
+            .attr("x2", width)
+            .attr("y1", yScale(minValue + 500))
+            .attr("y2", yScale(minValue + 500))
+            .attr("stroke", "orangered")
+            .attr("stroke-width", 2)
+            .attr("cursor", "grab")
+            .call(
+              d3
+                .drag()
+                .on("start", dragStarted)
+                .on("drag", dragged)
+                .on("end", dragEnded)
+            );
         }
       }
 
