@@ -18,23 +18,23 @@ const Setting = (props) => {
 
     const logScale = document.getElementById("logScale");
     const logBase = document.getElementById("logBase");
+    const showSpectrogram = document.getElementById("showSpectrogram");
     const showGrid = document.getElementById("showGrid");
     const spectrogramColor = document.getElementById("spectrogramColor");
     const stftColor = document.getElementById("stftColor");
     const zooming = document.getElementById("zooming");
-    const guideLine = document.getElementById("guideLine");
 
     if (props.currentSlotId !== -1) {
       // 가져온 값들로 설정 값들 갱신
       logScale.checked = props.info.logScale;
       logBase.value = props.info.logBase;
 
+      showSpectrogram.checked = props.info.showSpectrogram;
       showGrid.checked = props.info.showGrid;
       spectrogramColor.value = props.info.spectrogramColor;
       stftColor.value = props.info.stftColor;
 
       zooming.checked = props.info.zooming;
-      guideLine.checked = props.info.guideLine;
     }
   }, [props.info]);
 
@@ -55,9 +55,9 @@ const Setting = (props) => {
     let value = event.target.value;
     if (
       id === "logScale" ||
+      id === "showSpectrogram" ||
       id === "showGrid" ||
-      id === "zooming" ||
-      id === "guideLine"
+      id === "zooming"
     ) {
       // Switch 버튼 고려
       value = document.getElementById(id).checked;
@@ -159,6 +159,20 @@ const Setting = (props) => {
                   />
                 </div>
               </div>
+              <div class="row d-flex accordion-component align-items-center">
+                <div class="col-md-6 justify-content-start">
+                  Show Spectrogram
+                </div>
+                <div class="form-check form-switch col-md-6 d-flex justify-content-end align-items-center">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    id="showSpectrogram"
+                    onChange={(event) => dbUpdateData(event)}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -249,18 +263,6 @@ const Setting = (props) => {
                     type="checkbox"
                     role="switch"
                     id="zooming"
-                    onChange={(event) => dbUpdateData(event)}
-                  />
-                </div>
-              </div>
-              <div class="row d-flex accordion-component align-items-center">
-                <div class="col-md-6 justify-content-start">Guide Line</div>
-                <div class="form-check form-switch col-md-6 d-flex justify-content-end align-items-center">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    role="switch"
-                    id="guideLine"
                     onChange={(event) => dbUpdateData(event)}
                   />
                 </div>
