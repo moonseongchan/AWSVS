@@ -18,24 +18,24 @@ axios.create({
 const Import = (props) => {
   // 임시 - 아직 Wi-Fi CSI까지 할지는 의문임
   const handleWiFiFile = async (event) => {
-    if (props.currentSlotId !== -1) {
-      const formData = new FormData();
-      formData.append("file", event.target.files[0]);
+    // if (props.currentSlotId !== -1) {
+    //   const formData = new FormData();
+    //   formData.append("file", event.target.files[0]);
 
-      try {
-        const response = await axios.post(
-          "http://localhost:5000/upload",
-          formData,
-          { withCredentials: true }
-        );
-        // console.log(response.data.result);
-        props.getUpdatedData("data", response.data.result);
-      } catch (error) {
-        console.error("Error Uploading File:", error);
-      }
-    } else {
-      alert("Please Select Specific Slot");
-    }
+    //   try {
+    //     const response = await axios.post(
+    //       "http://localhost:5000/upload",
+    //       formData,
+    //       { withCredentials: true }
+    //     );
+    //     // console.log(response.data.result);
+    //     props.getUpdatedData("data", response.data.result);
+    //   } catch (error) {
+    //     console.error("Error Uploading File:", error);
+    //   }
+    // } else {
+    //   alert("Please Select Specific Slot");
+    // }
   };
 
   const handleUWBFile = async (event) => {

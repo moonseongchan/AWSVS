@@ -57,7 +57,6 @@ def uploadFile():
     return jsonify({'result': [CIR]})
 
 
-
 def temp_Get_Data():
     GlobalCIR = CIR
     if len(CIR) == 0:
@@ -65,48 +64,11 @@ def temp_Get_Data():
     else:
         return CIR
 
-
 #send
 @app.route('/get', methods=['POST'])
 def get_data():
-
-    #### argument format ######
-    # param1: reserved
-    # param2: reserved
-    # param3: reserved
-    # param4: processing method [Raw, SG, CWT, STFT, PCA]
-    # param5: hyperparams1 for processing method
-    # param6: hyperparams2 for processing method
-
-    # param1 = request.args.get('param1')
-    # param2 = request.args.get('param2')
-    # param3 = request.args.get('param3')
-    # param4 = request.args.get('param4')
-    # param5 = request.args.get('param5')
-    # param6 = request.args.get('param6')
-
-    # print("#### Debug:: argument check ####")
-    # print(param1,param2,param3,param4,param5,param6)
-
-    #############################################
-    ### New Fetch Method
-    #############################################
     data = np.array(json.loads(request.form['data']))
-    # data = np.array(temp_Get_Data()) #get measurement
-    # print(data)
-
     processInfo = json.loads(request.form['processing'])
-    
-    print()
-    print("- " * 30, end="\n")
-    # print(processInfo)
-    print("applySD :", processInfo['applySD'])
-    print("window :", processInfo['window'])
-    print("degreeOfPolynomial :", processInfo['degreeOfPolynomial'])
-    print("applySTFT :", processInfo['applySTFT'])
-    print("applyCWT :", processInfo['applyCWT'])
-    print("wavelet :", processInfo['wavelet'])
-    print("scale :", processInfo['scale'])
 
     # Determine Processing Method
     resultData=[]
@@ -117,38 +79,32 @@ def get_data():
     if len(data) > 100: # if 1D array
         data = data.reshape((1, -1)) 
 
+    print()
+    print("- " * 30, end="\n")
     if not isSG and not isCWT and not isSTFT:
-        print("\n < Raw >")
+        print("< Raw >")
         resultData = data
         print("Size of raw result is",np.shape(data))
-    elif not isSG and not isCWT:
-        print("\n < Only STFT >")
-        # TO DO (STFT)
-        print("To be implemented")
-    elif not isSG and not isSTFT:
-        print("\n < Only CWT >")
+    elif not isCWT and not isSTFT and isSG:
+        print("< Only SD >")
+        # Parse Hyperparameters
+        Window = processInfo['window']
+        DegreeOfPolynomial = processInfo['degreeOfPolynomial']
+        resultData = SGfilteringPlot(Timedelayidx,data,Window,DegreeOfPolynomial)
+    elif not isSG and not isSTFT and isCWT:
+        print("< Only CWT >")
         Wavelet = processInfo['wavelet']
         Scale = processInfo['scale']
         resultData, _ = CwtPlot(Timedelayidx,data,Wavelet,Scale)
         resultData = np.squeeze(abs(resultData), axis=1)
         print("spectogram dimension is")
         print("Size of CWT return reulst is",np.shape(resultData))
-    elif not isCWT and not isSTFT:
-        print("\n < Only SD >")
-        # Parse Hyperparameters
-        Window = processInfo['window']
-        DegreeOfPolynomial = processInfo['degreeOfPolynomial']
-        resultData = SGfilteringPlot(Timedelayidx,data,Window,DegreeOfPolynomial)
-    elif not isCWT:
-        print("\n < SD & STFT >")
-        # Parse Hyperparameters
-        Window = processInfo['window']
-        DegreeOfPolynomial = processInfo['degreeOfPolynomial']
-        fromSG = SGfilteringPlot(Timedelayidx,data,Window,DegreeOfPolynomial)
-        # TO DO (STFT)
-        print("To be implemented")
-    elif not isSTFT:
-        print("\n < SD & CWT >")
+    elif not isSG and not isCWT and isSTFT:
+        print("< Raw & STFT => Raw >")
+        resultData = data
+        print("Size of raw result is",np.shape(data))
+    elif not isSTFT and isSG and isCWT:
+        print("< SD & CWT >")
         # Parse Hyperparameters
         Window = processInfo['window']
         DegreeOfPolynomial = processInfo['degreeOfPolynomial']
@@ -159,55 +115,73 @@ def get_data():
         resultData = np.squeeze(abs(resultData), axis=1)
         print("spectogram dimension is")
         print("Size of CWT return reulst is",np.shape(resultData))
+    elif not isCWT and isSG and isSTFT:
+        print("< SD & STFT => SD >")
+        # Parse Hyperparameters
+        Window = processInfo['window']
+        DegreeOfPolynomial = processInfo['degreeOfPolynomial']
+        resultData = SGfilteringPlot(Timedelayidx,data,Window,DegreeOfPolynomial)
+
+    # Check Values
+    print("applySD :", processInfo['applySD'])
+    print("window :", processInfo['window'])
+    print("degreeOfPolynomial :", processInfo['degreeOfPolynomial'])
+    print("applyCWT :", processInfo['applyCWT'])
+    print("wavelet :", processInfo['wavelet'])
+    print("scale :", processInfo['scale'])
+    print("applySTFT :", processInfo['applySTFT'])
+    print()
+
+    result = resultData.tolist()
+    return jsonify({'result': result})
+
+
+@app.route('/stft', methods=['POST'])
+def get_stft():
+    data = np.array(json.loads(request.form['data']))
+    processInfo = json.loads(request.form['processing'])
+    time = json.loads(request.form['time'])
+    
+    # print()
+    # print(data)
+    # print("- " * 12, "STFT", " -" * 12)
+    # print("applySD :", processInfo['applySD'])
+    # print("window :", processInfo['window'])
+    # print("degreeOfPolynomial :", processInfo['degreeOfPolynomial'])
+    # print("applySTFT :", processInfo['applySTFT'])
+    # print("start :", time['start'])
+    # print("end :", time['end'])
+
+    # Determine Processing Method
+    isSG = processInfo['applySD']
+    isCWT = processInfo['applyCWT']
+    isSTFT = processInfo['applySTFT']
+
+    if len(data) > 100: # if 1D array
+        data = data.reshape((1, -1)) 
+
+    if not isSG and not isCWT and isSTFT:
+        # print("< Raw & STFT >")
+        [timeDomain, freqDomain] = WindowingFT(data, time['start'], time['end'])
+    elif not isCWT and isSTFT:
+        # print("< SD & STFT >")
+        # Parse Hyperparameters
+        Window = processInfo['window']
+        DegreeOfPolynomial = processInfo['degreeOfPolynomial']
+        fromSG = SGfilteringPlot(Timedelayidx,data,Window,DegreeOfPolynomial)
+        [timeDomain, freqDomain] = WindowingFT(fromSG, time['start'], time['end'])
 
     ###### TODO ######
     # example
     #[windowed_timedomain_signal,FT_result]=WindowingFT(denoisedSignalviaFilter,100,512) 
     ###### TODO end ######
 
-    result = resultData.tolist()
-    return jsonify({'result': result}) # 1D, 2D array ~
-
-    # if len(data) > 100: #if 1D array
-    #     data = data.reshape((1, -1)) 
-
-    # #processing
-    # if(processing_method=='Raw'):
-    #     resultData = data
-
-    # elif(processing_method=='SG'):
-    #     #parse hyperparameters
-    #     Window = processInfo['window']
-    #     DegreeOfPolynomial = processInfo['degreeOfPolynomial']
-    #     # get result
-    #     resultData = SGfilteringPlot(Timedelayidx,data,Window,DegreeOfPolynomial)
-
-    # elif(processing_method=='CWT'):
-    #     #parse hyperparameters
-    #     Wavelet = param5
-    #     Scale = processInfo['scale']
-    #     resultData, _ = CwtPlot(Timedelayidx,data,Wavelet,Scale)
-    #     resultData = abs(resultData)
-    #     print("spectogram dimension is")
-    #     print("Size of CWT return reulst is",np.shape(resultData))
-    #     #example Size  (12, 6, 512)
-    #     # 12: depending on scale
-    #     # 6: number of data
-    #     # 512 a data length
-
-    # elif(processing_method=='STFT'):
-    #     pass
-
-    # elif(processing_method=='PCA'):
-    #     pass
-
-    # else:
-    #     print("Not availiable of processing_method")
+    # print("STFT X :", timeDomain)
+    # print("STFT Y :", freqDomain)
     
     # result = resultData.tolist()
-    # return jsonify(result) # 1D, 2D array ~
-
-
+    # return jsonify({'result': result})
+    return jsonify({'result': "temp"})
 
 def GetCirAmplitude(CIR):
     """
@@ -275,7 +249,6 @@ def GetMeasurement_mag(type="Ipatov",env="NLOS"):
     CIR = np.array(CIR)
     return CIR
 
-
     
 def SGfilteringPlot(Timedelayidx,StackedCIR,hyperParam1=20,hyperParam2=11):
     CIR_ret = np.empty((StackedCIR.shape[0], StackedCIR.shape[1]))
@@ -341,7 +314,7 @@ def WindowingFT(data,startIdx,endIdx):
     """
     intervaled_signal = data[0, startIdx:endIdx]  
     num_samples = len(intervaled_signal)
-    print("Debug:: widnow size is", num_samples)
+    # print("Debug:: widnow size is", num_samples)
     fft = np.fft.fft(intervaled_signal) / num_samples #num_samples is normalizer
     #scaleY=  abs(fft[0])/2
     fft[0] = 0 #dc offset compenstation
@@ -349,8 +322,5 @@ def WindowingFT(data,startIdx,endIdx):
 
     return intervaled_signal,abs(fft)  #time domain(only windowed), freq domian
 
-    
-
-    
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
+import axios from "axios";
 import * as d3 from "d3";
 
 import "./Dashboard.scss";
 
 const LineGraph = (props) => {
-  const [STFTPlot, setSTFTPlot] = useState([]);
-
+  const lineGraphRef = useRef(null);
+  const stftGraphRef = useRef(null);
+  
   // To resize the width of the graph
   const margin = { top: 10, right: 30, bottom: 20, left: 40 };
   const getGraphWidth = () => {
@@ -23,7 +25,6 @@ const LineGraph = (props) => {
     setWidth(width);
   };
 
-  const lineGraphRef = useRef(null);
   const initialWidth = getGraphWidth() - margin.left - margin.right;
   const [width, setWidth] = useState(initialWidth);
   const height = 250 - margin.top - margin.bottom;
@@ -262,19 +263,32 @@ const LineGraph = (props) => {
           );
         }
 
-        function brushed(event) {
-          const selected = [];
+        async function brushed(event) {
           const selection = event.selection;
+          let time;
           if (selection) {
             const [x0, x1] = selection.map(newXScale.invert);
-            // Brush 범위 안에 들어오는 X, Y값 저장 (추후 STFT에 사용)
-            plot[0].forEach((d, i) => {
-              if (x0 <= i && i <= x1) {
-                selected.push({ x: i, y: d });
-              }
-            });
+            time = { start: parseInt(x0), end: parseInt(x1) };
           }
-          setSTFTPlot(selected);
+
+          // TO DO
+          // Get STFT Result
+          let stftPlot;
+          const formData = new FormData();
+          formData.append("data", JSON.stringify(raw));
+          formData.append("processing", JSON.stringify(processing));
+          formData.append("time", JSON.stringify(time));
+
+          try {
+            const response = await axios.post(
+              "http://localhost:5000/stft",
+              formData,
+              { withCredentials: true }
+            );
+            // console.log(response.data);
+          } catch (error) {
+            console.error("Error Uploading File:", error);
+          }
         }
 
         const brush = d3
