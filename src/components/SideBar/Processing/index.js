@@ -19,8 +19,8 @@ const Processing = (props) => {
     // console.log("Loaded", props.currentSlotId, props.info);
     setProcessInfo(props.info);
 
-    const applySignalDenoising = document.getElementById(
-      "applySignalDenoising"
+    const applySD = document.getElementById(
+      "applySD"
     );
     const window = document.getElementById("window");
     const degreeOfPolynomial = document.getElementById("degreeOfPolynomial");
@@ -35,7 +35,7 @@ const Processing = (props) => {
 
     if (props.currentSlotId !== -1) {
       // 가져온 값들로 설정 값들 갱신
-      applySignalDenoising.checked = props.info.applySignalDenoising;
+      applySD.checked = props.info.applySD;
       window.value = props.info.window;
       degreeOfPolynomial.value = props.info.degreeOfPolynomial;
       applyCWT.checked = props.info.applyCWT;
@@ -85,7 +85,7 @@ const Processing = (props) => {
     const id = event.target.id;
     let value = event.target.value;
     if (
-      id === "applySignalDenoising" ||
+      id === "applySD" ||
       id === "applyCWT" ||
       id === "applySTFT" ||
       id === "compare"
@@ -168,7 +168,7 @@ const Processing = (props) => {
                     class="form-check-input"
                     type="checkbox"
                     role="switch"
-                    id="applySignalDenoising"
+                    id="applySD"
                     onChange={(event) => dbUpdateData(event)}
                   />
                 </div>

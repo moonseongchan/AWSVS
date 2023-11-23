@@ -285,7 +285,7 @@ const CompareLineGraph = (props) => {
         svg.on(".zoom", null);
       }
     }
-  }, [width, props.slot]);
+  }, [width, props.slots]);
 
   return (
     <div

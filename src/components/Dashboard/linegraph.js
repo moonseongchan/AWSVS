@@ -59,7 +59,7 @@ const LineGraph = (props) => {
 
       let minValue;
       let maxValue;
-      if (!processing.applyCWT && processing.applySignalDenoising) {
+      if (!processing.applyCWT && processing.applySD) {
         minValue = Math.min(minRaw, minPlot);
         maxValue = Math.max(maxRaw, maxPlot);
       } else {
@@ -196,7 +196,7 @@ const LineGraph = (props) => {
         });
 
         //// Not CWT, but SG, Plot Raw Data for Comparison
-        if (!processing.applyCWT && processing.applySignalDenoising) {
+        if (!processing.applyCWT && processing.applySD) {
           // Raw Data 고정 (Signal Denoising만 On되어 있을 때)
           raw.forEach((d, idx) => {
             graph

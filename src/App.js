@@ -10,7 +10,7 @@ export default function App() {
   const [idx, setIdx] = useState(0);
 
   const getUpdatedSlots = (value) => {
-    console.log("App.js", value);
+    console.log("[ App.js ]", value);
     setSlots(value);
   };
 
@@ -20,15 +20,17 @@ export default function App() {
       id: idx + 1,
       // Raw Data
       data: [],
-      // Dashboard에 시각화 할 Data
+      // Slot Dashboard에 시각화 할 Data
       plot: [],
-      // Comparison을 위한 Signal Denoising 처리한 Data
+      // STFT 처리한 Data
+      stft: [],
+      // Signal Denoising 처리한 Data (for Comparison)
       sd: [],
-      // Comparison을 위한 CWT 처리한 Data
+      // CWT 처리한 Data (for Comparison)
       cwt: [],
       // Processing
       processing: {
-        applySignalDenoising: false,
+        applySD: false,
         // Window has to be odd number
         window: 19,
         // Window > Degree of Polynomial

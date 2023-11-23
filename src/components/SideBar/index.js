@@ -46,72 +46,6 @@ const SideBar = (props) => {
           }
           return slot;
         });
-
-        ///////////////////////////////////////
-        // Signal Denoising for Comparison (Default 파라미터 설정)
-        ///////////////////////////////////////
-        const sdFormData = new FormData();
-        sdFormData.append("data", JSON.stringify(value));
-        sdFormData.append(
-          "processing",
-          JSON.stringify({
-            applySignalDenoising: true,
-            window: 19,
-            degreeOfPolynomial: 8,
-            applySTFT: false,
-            applyCWT: false,
-            wavelet: "cgau1",
-            scale: 32,
-            compare: false,
-            target: null,
-            xFeature: null,
-            yFeature: null,
-          })
-        );
-        const sdResponse = await axios.post(
-          "http://localhost:5000/get",
-          sdFormData,
-          { withCredentials: true }
-        );
-        newSlots = newSlots.map((slot) => {
-          if (slot.id === currentSlotId) {
-            return { ...slot, sd: sdResponse.data.result };
-          }
-          return slot;
-        });
-
-        ///////////////////////////////////////
-        // CWT for Comparison (Default 파라미터 설정)
-        ///////////////////////////////////////
-        const cwtFormData = new FormData();
-        cwtFormData.append("data", JSON.stringify(value));
-        cwtFormData.append(
-          "processing",
-          JSON.stringify({
-            applySignalDenoising: false,
-            window: 19,
-            degreeOfPolynomial: 8,
-            applySTFT: false,
-            applyCWT: true,
-            wavelet: "cgau1",
-            scale: 32,
-            compare: false,
-            target: null,
-            xFeature: null,
-            yFeature: null,
-          })
-        );
-        const cwtResponse = await axios.post(
-          "http://localhost:5000/get",
-          sdFormData,
-          { withCredentials: true }
-        );
-        newSlots = newSlots.map((slot) => {
-          if (slot.id === currentSlotId) {
-            return { ...slot, cwt: cwtResponse.data.result };
-          }
-          return slot;
-        });
       } else if (key === "processing") {
         //// Processing
         newSlots = slots.map((slot) => {
@@ -183,9 +117,9 @@ const SideBar = (props) => {
         });
       }
 
-      // Raw Data Processing
       const selectedSlot = newSlots.filter((slot) => slot.id === currentSlotId);
       if (selectedSlot[0].data.length !== 0) {
+        // Plot Data 설정
         const formData = new FormData();
         formData.append("data", JSON.stringify(selectedSlot[0].data));
         formData.append(
@@ -202,6 +136,64 @@ const SideBar = (props) => {
           newSlots = newSlots.map((slot) => {
             if (slot.id === currentSlotId) {
               return { ...slot, plot: response.data.result };
+            }
+            return slot;
+          });
+        } catch (error) {
+          console.error("Error Uploading File:", error);
+        }
+
+        // Signal Denoising Data 설정
+        const sdFormData = new FormData();
+        sdFormData.append("data", JSON.stringify(selectedSlot[0].data));
+        sdFormData.append(
+          "processing",
+          JSON.stringify({
+            ...selectedSlot[0].processing,
+            applySD: true,
+            applyCWT: false,
+            applySTFT: false,
+          })
+        );
+        try {
+          const response = await axios.post(
+            "http://localhost:5000/get",
+            sdFormData,
+            { withCredentials: true }
+          );
+          // console.log(response.data.result);
+          newSlots = newSlots.map((slot) => {
+            if (slot.id === currentSlotId) {
+              return { ...slot, sd: response.data.result };
+            }
+            return slot;
+          });
+        } catch (error) {
+          console.error("Error Uploading File:", error);
+        }
+
+        // CWT Data 설정
+        const cwtFormData = new FormData();
+        cwtFormData.append("data", JSON.stringify(selectedSlot[0].data));
+        cwtFormData.append(
+          "processing",
+          JSON.stringify({
+            ...selectedSlot[0].processing,
+            applySD: false,
+            applyCWT: true,
+            applySTFT: false,
+          })
+        );
+        try {
+          const response = await axios.post(
+            "http://localhost:5000/get",
+            cwtFormData,
+            { withCredentials: true }
+          );
+          // console.log(response.data.result);
+          newSlots = newSlots.map((slot) => {
+            if (slot.id === currentSlotId) {
+              return { ...slot, cwt: response.data.result };
             }
             return slot;
           });

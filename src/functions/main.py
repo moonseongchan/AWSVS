@@ -52,7 +52,7 @@ def uploadFile():
     CIR =[]
     for row in reader:
         CIR.append(float(row[0]))
-    print(CIR)
+    # print(CIR)
 
     return jsonify({'result': [CIR]})
 
@@ -96,19 +96,21 @@ def get_data():
     # print(data)
 
     processInfo = json.loads(request.form['processing'])
+    
+    print()
+    print("- " * 30, end="\n")
     # print(processInfo)
-    print("applySignalDenoising :", processInfo['applySignalDenoising'])
+    print("applySD :", processInfo['applySD'])
     print("window :", processInfo['window'])
     print("degreeOfPolynomial :", processInfo['degreeOfPolynomial'])
     print("applySTFT :", processInfo['applySTFT'])
     print("applyCWT :", processInfo['applyCWT'])
     print("wavelet :", processInfo['wavelet'])
     print("scale :", processInfo['scale'])
-    print("- "* 20, end="\n")
 
     # Determine Processing Method
     resultData=[]
-    isSG = processInfo['applySignalDenoising']
+    isSG = processInfo['applySD']
     isCWT = processInfo['applyCWT']
     isSTFT = processInfo['applySTFT']
 
@@ -116,15 +118,15 @@ def get_data():
         data = data.reshape((1, -1)) 
 
     if not isSG and not isCWT and not isSTFT:
-        print("Raw")
+        print("\n < Raw >")
         resultData = data
         print("Size of raw result is",np.shape(data))
     elif not isSG and not isCWT:
-        print("Only STFT")
+        print("\n < Only STFT >")
         # TO DO (STFT)
         print("To be implemented")
     elif not isSG and not isSTFT:
-        print("Only CWT")
+        print("\n < Only CWT >")
         Wavelet = processInfo['wavelet']
         Scale = processInfo['scale']
         resultData, _ = CwtPlot(Timedelayidx,data,Wavelet,Scale)
@@ -132,13 +134,13 @@ def get_data():
         print("spectogram dimension is")
         print("Size of CWT return reulst is",np.shape(resultData))
     elif not isCWT and not isSTFT:
-        print("Only SG")
+        print("\n < Only SD >")
         # Parse Hyperparameters
         Window = processInfo['window']
         DegreeOfPolynomial = processInfo['degreeOfPolynomial']
         resultData = SGfilteringPlot(Timedelayidx,data,Window,DegreeOfPolynomial)
     elif not isCWT:
-        print("SG & STFT")
+        print("\n < SD & STFT >")
         # Parse Hyperparameters
         Window = processInfo['window']
         DegreeOfPolynomial = processInfo['degreeOfPolynomial']
@@ -146,7 +148,7 @@ def get_data():
         # TO DO (STFT)
         print("To be implemented")
     elif not isSTFT:
-        print("SG & CWT")
+        print("\n < SD & CWT >")
         # Parse Hyperparameters
         Window = processInfo['window']
         DegreeOfPolynomial = processInfo['degreeOfPolynomial']
