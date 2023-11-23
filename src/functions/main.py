@@ -158,6 +158,11 @@ def get_data():
         print("spectogram dimension is")
         print("Size of CWT return reulst is",np.shape(resultData))
 
+    ###### TODO ######
+    # example
+    #[windowed_timedomain_signal,FT_result]=WindowingFT(denoisedSignalviaFilter,100,512) 
+    ###### TODO end ######
+
     result = resultData.tolist()
     return jsonify({'result': result}) # 1D, 2D array ~
 
@@ -322,6 +327,27 @@ def CwtPlot(Timedelayidx,StackedCIR,wavelet_name='cgau1',numScales=12): #scaling
     coeffs, freqs = cwt(StackedCIR, scales, wavelet=wavelet_name,sampling_period=sampling_period)
     return coeffs, freqs
 
+def WindowingFT(data,startIdx,endIdx):
+    """
+    input ::
+        data: UWB data
+        startIdx: start windowing index, in out app, [0,512] (integer)
+        endIdx: start windowing index, endIdx> startIdx (integer)
+    return ::
+        intervaled_signal: windowing UWB data
+        abs(fft): fourier transfrom result
+    """
+    intervaled_signal = data[0, startIdx:endIdx]  
+    num_samples = len(intervaled_signal)
+    print("Debug:: widnow size is", num_samples)
+    fft = np.fft.fft(intervaled_signal) / num_samples #num_samples is normalizer
+    #scaleY=  abs(fft[0])/2
+    fft[0] = 0 #dc offset compenstation
+    fft = np.fft.fftshift(fft) #align for 0Hz 
+
+    return intervaled_signal,abs(fft)  #time domain(only windowed), freq domian
+
+    
 
     
 if __name__ == '__main__':
