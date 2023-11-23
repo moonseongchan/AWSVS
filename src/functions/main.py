@@ -253,7 +253,7 @@ def GetMeasurement_mag(type="Ipatov",env="NLOS"):
 def SGfilteringPlot(Timedelayidx,StackedCIR,hyperParam1=20,hyperParam2=11):
     CIR_ret = np.empty((StackedCIR.shape[0], StackedCIR.shape[1]))
     for i in range(StackedCIR.shape[0]):
-        print(len(StackedCIR[i]))
+        # print(len(StackedCIR[i]))
         result =  SGfiltering(StackedCIR[i],hyperParam1,hyperParam2)
         CIR_ret[i]  = result
     print("Size of SGfilter result is",np.shape(CIR_ret))

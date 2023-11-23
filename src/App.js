@@ -10,7 +10,7 @@ export default function App() {
   const [idx, setIdx] = useState(0);
 
   const getUpdatedSlots = (value) => {
-    console.log("[ App.js ]", value);
+    // console.log("[ App.js ]", value);
     setSlots(value);
   };
 
