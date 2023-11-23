@@ -195,69 +195,84 @@ const CompareLineGraph = (props) => {
             .attr("opacity", ".2");
         }
 
-        // Plot Area
-        // if (maxTarget > maxCurrent) {
-        //   targetSD.forEach((d) => {
-        //     graph
-        //       .append("path")
-        //       .datum(d)
-        //       .attr("fill", lineColors[2])
-        //       .attr("stroke", lineColors[2])
-        //       .attr("stroke-width", 1.5)
-        //       .attr("d", area);
-        //   });
+        // Plot Area & Line
+        if (maxTarget > maxCurrent) {
+          targetSD.forEach((d) => {
+            graph
+              .append("path")
+              .datum(d)
+              .attr("fill", lineColors[2])
+              .attr("opacity", "0.6")
+              .attr("d", area);
+          });
 
-        //   currentSD.forEach((d) => {
-        //     graph
-        //       .append("path")
-        //       .datum(d)
-        //       .attr("fill", lineColors[0])
-        //       .attr("stroke", lineColors[0])
-        //       .attr("stroke-width", 1.5)
-        //       .attr("d", area);
-        //   });
-        // } else {
-        //   currentSD.forEach((d) => {
-        //     graph
-        //       .append("path")
-        //       .datum(d)
-        //       .attr("fill", lineColors[0])
-        //       .attr("stroke", lineColors[0])
-        //       .attr("stroke-width", 1.5)
-        //       .attr("d", area);
-        //   });
+          targetSD.forEach((d) => {
+            graph
+              .append("path")
+              .datum(d)
+              .attr("fill", "none")
+              .attr("stroke", lineColors[2])
+              .attr("stroke-width", 1.5)
+              .attr("d", line);
+          });
 
-        //   targetSD.forEach((d) => {
-        //     graph
-        //       .append("path")
-        //       .datum(d)
-        //       .attr("fill", lineColors[2])
-        //       .attr("stroke", lineColors[2])
-        //       .attr("stroke-width", 1.5)
-        //       .attr("d", area);
-        //   });
-        // }
+          currentSD.forEach((d) => {
+            graph
+              .append("path")
+              .datum(d)
+              .attr("fill", lineColors[0])
+              .attr("opacity", "0.6")
+              .attr("d", area);
+          });
 
-        // Plot Line
-        currentSD.forEach((d) => {
-          graph
-            .append("path")
-            .datum(d)
-            .attr("fill", "none")
-            .attr("stroke", lineColors[0])
-            .attr("stroke-width", 2)
-            .attr("d", line);
-        });
+          currentSD.forEach((d) => {
+            graph
+              .append("path")
+              .datum(d)
+              .attr("fill", "none")
+              .attr("stroke", lineColors[0])
+              .attr("stroke-width", 1.5)
+              .attr("d", line);
+          });
+        } else {
+          currentSD.forEach((d) => {
+            graph
+              .append("path")
+              .datum(d)
+              .attr("fill", lineColors[0])
+              .attr("opacity", "0.6")
+              .attr("d", area);
+          });
 
-        targetSD.forEach((d) => {
-          graph
-            .append("path")
-            .datum(d)
-            .attr("fill", "none")
-            .attr("stroke", lineColors[2])
-            .attr("stroke-width", 2)
-            .attr("d", line);
-        });
+          currentSD.forEach((d) => {
+            graph
+              .append("path")
+              .datum(d)
+              .attr("fill", "none")
+              .attr("stroke", lineColors[0])
+              .attr("stroke-width", 1.5)
+              .attr("d", line);
+          });
+
+          targetSD.forEach((d) => {
+            graph
+              .append("path")
+              .datum(d)
+              .attr("fill", lineColors[2])
+              .attr("opacity", "0.6")
+              .attr("d", area);
+          });
+
+          targetSD.forEach((d) => {
+            graph
+              .append("path")
+              .datum(d)
+              .attr("fill", "none")
+              .attr("stroke", lineColors[2])
+              .attr("stroke-width", 1.5)
+              .attr("d", line);
+          });
+        }
       }
 
       // Handle Zooming Interaction Event
