@@ -3,6 +3,8 @@ import * as d3 from "d3";
 import { data1 } from "./data";
 
 const LineGraph = (props) => {
+  const [STFTPlot, setSTFTPlot] = useState([]);
+
   // To resize the width of the graph
   const margin = { top: 10, right: 30, bottom: 20, left: 40 };
   const getGraphWidth = () => {
@@ -188,11 +190,11 @@ const LineGraph = (props) => {
             .datum(d)
             .attr("fill", "none")
             .attr("stroke", lineColors[idx % lineColors.length])
-            .attr("stroke-width", 2)
+            .attr("stroke-width", 1.5)
             .attr("d", line);
         });
 
-        // Not CWT, but SG, Plot Raw Data for Comparison
+        //// Not CWT, but SG, Plot Raw Data for Comparison
         if (!processing.applyCWT && processing.applySignalDenoising) {
           // Raw Data 고정 (Signal Denoising만 On되어 있을 때)
           raw.forEach((d, idx) => {
@@ -201,13 +203,13 @@ const LineGraph = (props) => {
               .datum(d)
               .attr("fill", "none")
               .attr("stroke", lineColors[idx % lineColors.length])
-              .attr("stroke-width", 2.5)
+              .attr("stroke-width", 2)
               .attr("opacity", "0.5")
               .attr("d", line);
           });
         }
 
-        // Threshold Line (Drag)
+        //// Threshold Line (Drag Interaction)
         const dragStarted = (event, d) => {
           d3.select(".threshold-line").raise().attr("stroke", "gray");
         };
@@ -245,6 +247,59 @@ const LineGraph = (props) => {
                 .on("drag", dragged)
                 .on("end", dragEnded)
             );
+        }
+
+        //// Brush (for STFT)
+        function beforeBrushStarted(event) {
+          const dx = newXScale(50) - newXScale(0); // Use a fixed width when recentering.
+          const [[cx]] = d3.pointers(event);
+          const [x0, x1] = [cx - dx / 2, cx + dx / 2];
+          const [X0, X1] = newXScale.range();
+          d3.select(this.parentNode).call(
+            brush.move,
+            x1 > X1 ? [X1 - dx, X1] : x0 < X0 ? [X0, X0 + dx] : [x0, x1]
+          );
+        }
+
+        function brushed(event) {
+          const selected = [];
+          const selection = event.selection;
+          if (selection) {
+            const [x0, x1] = selection.map(newXScale.invert);
+            // Brush 범위 안에 들어오는 X, Y값 저장 (추후 STFT에 사용)
+            plot[0].forEach((d, i) => {
+              if (x0 <= i && i <= x1) {
+                console.log(i, d);
+                selected.push({ x: i, y: d });
+              }
+            });
+          }
+          setSTFTPlot(selected);
+        }
+
+        const brush = d3
+          .brushX()
+          .extent([
+            [0, 0],
+            [width, height],
+          ])
+          .on("start brush end", brushed);
+
+        if (processing.applySTFT) {
+          svg
+            .append("g")
+            .attr("class", "brush")
+            .attr("transform", `translate(${margin.left}, ${margin.top})`)
+            .call(brush)
+            .call(brush.move, [0, 100].map(newXScale))
+            .call((g) =>
+              g
+                .select(".overlay")
+                .datum({ type: "selection" })
+                .on("mousedown touchstart", beforeBrushStarted)
+            );
+        } else {
+          svg.on(".brush", null);
         }
       }
 
