@@ -239,7 +239,7 @@ const LineGraph = (props) => {
             .attr("y1", yScale(minValue + 500))
             .attr("y2", yScale(minValue + 500))
             .attr("stroke", "orangered")
-            .attr("stroke-width", 2)
+            .attr("stroke-width", 1.5)
             .attr("cursor", "grab")
             .call(
               d3

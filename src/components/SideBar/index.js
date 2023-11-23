@@ -121,6 +121,25 @@ const SideBar = (props) => {
           return slot;
         });
 
+        // Target이 Null 값이면 Compare 실행 안되게끔 처리
+        if (value.target === null) {
+          newSlots = newSlots.map((slot) => {
+            if (slot.id === currentSlotId) {
+              return {
+                ...slot,
+                processing: {
+                  ...slot.processing,
+                  compare: false,
+                  // To Do - 여기는 추후 처리
+                  // xFeature: false,
+                  // yFeature: false,
+                },
+              };
+            }
+            return slot;
+          });
+        }
+
         // STFT와 Zooming / Threshold Line 기능 동시에 사용 못하게끔 처리
         if (value.applySTFT) {
           newSlots = newSlots.map((slot) => {

@@ -202,7 +202,7 @@ const CompareLineGraph = (props) => {
               .append("path")
               .datum(d)
               .attr("fill", lineColors[2])
-              .attr("opacity", "0.6")
+              .attr("opacity", "0.5")
               .attr("d", area);
           });
 
@@ -221,7 +221,7 @@ const CompareLineGraph = (props) => {
               .append("path")
               .datum(d)
               .attr("fill", lineColors[0])
-              .attr("opacity", "0.6")
+              .attr("opacity", "0.5")
               .attr("d", area);
           });
 
@@ -240,7 +240,7 @@ const CompareLineGraph = (props) => {
               .append("path")
               .datum(d)
               .attr("fill", lineColors[0])
-              .attr("opacity", "0.6")
+              .attr("opacity", "0.5")
               .attr("d", area);
           });
 
@@ -259,7 +259,7 @@ const CompareLineGraph = (props) => {
               .append("path")
               .datum(d)
               .attr("fill", lineColors[2])
-              .attr("opacity", "0.6")
+              .attr("opacity", "0.5")
               .attr("d", area);
           });
 
