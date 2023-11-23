@@ -122,10 +122,7 @@ const SideBar = (props) => {
         // Plot Data 설정
         const formData = new FormData();
         formData.append("data", JSON.stringify(selectedSlot[0].data));
-        formData.append(
-          "processing",
-          JSON.stringify(selectedSlot[0].processing)
-        );
+        formData.append("processing", JSON.stringify(selectedSlot[0].processing));
         try {
           const response = await axios.post(
             "http://localhost:5000/get",
@@ -304,10 +301,7 @@ const SideBar = (props) => {
         </ul>
 
         <div class="tab-content overflow-y-scroll" id="pills-tabContent">
-          <Import
-            currentSlotId={currentSlotId}
-            getUpdatedData={getUpdatedData}
-          />
+          <Import currentSlotId={currentSlotId} getUpdatedData={getUpdatedData} />
           <Processing
             currentSlotId={currentSlotId}
             slots={slots}
