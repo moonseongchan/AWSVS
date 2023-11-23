@@ -66,10 +66,7 @@ const SideBar = (props) => {
       if (selectedSlot[0].data.length !== 0) {
         const formData = new FormData();
         formData.append("data", JSON.stringify(selectedSlot[0].data));
-        formData.append(
-          "processing",
-          JSON.stringify(selectedSlot[0].processing)
-        );
+        formData.append("processing", JSON.stringify(selectedSlot[0].processing));
         try {
           const response = await axios.post(
             "http://localhost:5000/get",
@@ -103,18 +100,11 @@ const SideBar = (props) => {
     if (currentSlotId === -1) {
       return;
     } else {
-      const isSlotExist = props.slots.some((slot) => slot.id === currentSlotId);
-      if (!isSlotExist) {
-        setCurrentSlotId(-1);
-        setCurrentSlotLabel("Select Slot");
-      } else {
-        console.log(currentSlotId);
-        const selectedSlot = slots.filter((slot) => slot.id === currentSlotId);
-        const newProcessInfo = selectedSlot[0].processing;
-        const optionsInfo = selectedSlot[0].options;
-        setProcessInfo(newProcessInfo);
-        setOptionsInfo(optionsInfo);
-      }
+      const selectedSlot = slots.filter((slot) => slot.id === currentSlotId);
+      const newProcessInfo = selectedSlot[0].processing;
+      const optionsInfo = selectedSlot[0].options;
+      setProcessInfo(newProcessInfo);
+      setOptionsInfo(optionsInfo);
     }
   }, [currentSlotId, props]);
 
@@ -190,10 +180,7 @@ const SideBar = (props) => {
         </ul>
 
         <div class="tab-content overflow-y-scroll" id="pills-tabContent">
-          <Import
-            currentSlotId={currentSlotId}
-            getUpdatedData={getUpdatedData}
-          />
+          <Import currentSlotId={currentSlotId} getUpdatedData={getUpdatedData} />
           <Processing
             currentSlotId={currentSlotId}
             info={processInfo}
