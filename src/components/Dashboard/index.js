@@ -102,7 +102,7 @@ const Dashboard = (props) => {
                     />
                   </div>
                 )}
-                
+
                 {/* <div id="spectrogram" class="px-0 py-0 my-1">
                       <CompareSpectrogram currentId={slot.id} target={slot.processing.target} slots={slots}/>
                     </div> */}

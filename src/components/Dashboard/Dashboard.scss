@@ -142,3 +142,11 @@
     margin: 2px auto;
     z-index: 1100 !important;
 }
+
+rect.selection {
+    fill: #990f02;
+    stroke: #990f02;
+    stroke-width: 1px;
+    stroke-opacity: 1;
+    fill-opacity: 0.15;
+}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import * as d3 from "d3";
-import { data1 } from "./data";
+
+import "./Dashboard.scss";
 
 const LineGraph = (props) => {
   const [STFTPlot, setSTFTPlot] = useState([]);
