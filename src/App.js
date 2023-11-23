@@ -42,7 +42,7 @@ export default function App() {
         target: null,
         // TO-DO (기본값 변경)
         xFeature: null,
-        yFeature: null
+        yFeature: null,
       },
       // Setting
       options: {

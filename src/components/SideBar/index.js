@@ -39,6 +39,7 @@ const SideBar = (props) => {
     if (currentSlotId !== -1) {
       let newSlots;
       if (key === "data") {
+        //// Data
         newSlots = slots.map((slot) => {
           if (slot.id === currentSlotId) {
             return { ...slot, data: value };
@@ -112,16 +113,52 @@ const SideBar = (props) => {
           return slot;
         });
       } else if (key === "processing") {
+        //// Processing
         newSlots = slots.map((slot) => {
           if (slot.id === currentSlotId) {
             return { ...slot, processing: value };
           }
           return slot;
         });
+
+        // STFT와 Zooming / Threshold Line 기능 동시에 사용 못하게끔 처리
+        if (value.applySTFT) {
+          newSlots = newSlots.map((slot) => {
+            if (slot.id === currentSlotId) {
+              return {
+                ...slot,
+                options: {
+                  ...slot.options,
+                  zooming: false,
+                  thresholdLine: false,
+                },
+              };
+            }
+            return slot;
+          });
+        }
       } else if (key === "options") {
+        //// Options
         newSlots = slots.map((slot) => {
           if (slot.id === currentSlotId) {
             return { ...slot, options: value };
+          }
+          return slot;
+        });
+
+        // STFT와 Zooming / Threshold Line 기능 동시에 사용 못하게끔 처리
+        newSlots = newSlots.map((slot) => {
+          if (slot.id === currentSlotId) {
+            if (slot.processing.applySTFT) {
+              return {
+                ...slot,
+                options: {
+                  ...slot.options,
+                  zooming: false,
+                  thresholdLine: false,
+                },
+              };
+            }
           }
           return slot;
         });

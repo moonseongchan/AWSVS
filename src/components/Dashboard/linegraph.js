@@ -251,7 +251,7 @@ const LineGraph = (props) => {
 
         //// Brush (for STFT)
         function beforeBrushStarted(event) {
-          const dx = newXScale(50) - newXScale(0); // Use a fixed width when recentering.
+          const dx = newXScale(25) - newXScale(0); // Use a fixed width when recentering.
           const [[cx]] = d3.pointers(event);
           const [x0, x1] = [cx - dx / 2, cx + dx / 2];
           const [X0, X1] = newXScale.range();
@@ -269,7 +269,6 @@ const LineGraph = (props) => {
             // Brush 범위 안에 들어오는 X, Y값 저장 (추후 STFT에 사용)
             plot[0].forEach((d, i) => {
               if (x0 <= i && i <= x1) {
-                console.log(i, d);
                 selected.push({ x: i, y: d });
               }
             });
@@ -291,7 +290,7 @@ const LineGraph = (props) => {
             .attr("class", "brush")
             .attr("transform", `translate(${margin.left}, ${margin.top})`)
             .call(brush)
-            .call(brush.move, [0, 100].map(newXScale))
+            .call(brush.move, [50, 100].map(newXScale))
             .call((g) =>
               g
                 .select(".overlay")
