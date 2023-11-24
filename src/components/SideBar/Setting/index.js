@@ -22,7 +22,7 @@ const Setting = (props) => {
     const showGrid = document.getElementById("showGrid");
     const spectrogramColor = document.getElementById("spectrogramColor");
     const zooming = document.getElementById("zooming");
-    const hover = document.getElementById("hover");
+    const lineAnalysis = document.getElementById("lineAnalysis");
     const thresholdLine = document.getElementById("thresholdLine");
 
     if (props.currentSlotId !== -1) {
@@ -35,7 +35,7 @@ const Setting = (props) => {
       spectrogramColor.value = props.info.spectrogramColor;
 
       zooming.checked = props.info.zooming;
-      hover.checked = props.info.hover;
+      lineAnalysis.checked = props.info.lineAnalysis;
       thresholdLine.checked = props.info.thresholdLine;
     }
   }, [props.info]);
@@ -60,7 +60,7 @@ const Setting = (props) => {
       id === "showSpectrogram" ||
       id === "showGrid" ||
       id === "zooming" ||
-      id === "hover" ||
+      id === "lineAnalysis" ||
       id === "thresholdLine"
     ) {
       // Switch 버튼 고려
@@ -254,13 +254,13 @@ const Setting = (props) => {
                 </div>
               </div>
               <div class="row d-flex accordion-component align-items-center">
-                <div class="col-md-6 justify-content-start">Line Hover</div>
+                <div class="col-md-6 justify-content-start">Line Analysis (CWT)</div>
                 <div class="form-check form-switch col-md-6 d-flex justify-content-end align-items-center">
                   <input
                     class="form-check-input"
                     type="checkbox"
                     role="switch"
-                    id="hover"
+                    id="lineAnalysis"
                     onChange={(event) => dbUpdateData(event)}
                   />
                 </div>

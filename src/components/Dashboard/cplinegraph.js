@@ -138,9 +138,9 @@ const CompareLineGraph = (props) => {
         const yMin = yScale(Math.min(minCurrent, minTarget));
         const area = d3
           .area()
-          .x((d, i) => newXScale(i) < 0 ? 0 : newXScale(i))
+          .x((d, i) => (newXScale(i) < 0 ? 0 : newXScale(i)))
           .y0(yMin)
-          .y1((d, i) => newXScale(i)>width ? yMin: yScale(d));
+          .y1((d, i) => (newXScale(i) > width ? yMin : yScale(d)));
 
         const line = d3
           .line()

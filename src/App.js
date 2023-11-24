@@ -10,7 +10,7 @@ export default function App() {
   const [idx, setIdx] = useState(0);
 
   const getUpdatedSlots = (value) => {
-    console.log("[ App.js ]", value);
+    // console.log("[ App.js ]", value);
     setSlots(value);
   };
 
@@ -54,10 +54,10 @@ export default function App() {
         showSpectrogram: false,
         spectrogramColor: "Viridis",
         zooming: false,
-        hover: false,
+        lineAnalysis: false,
         thresholdLine: false,
       },
-      zoomDomain: []
+      zoomDomain: [],
     };
     setIdx(idx + 1);
     setSlots([...slots, newSlot]);

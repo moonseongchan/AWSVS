@@ -199,6 +199,7 @@ const LineGraph = (props) => {
         plot.forEach((d, idx) => {
           graph
             .append("path")
+            .attr("class", "line" + idx)
             .datum(d)
             .attr("fill", "none")
             .attr("stroke", lineColors[idx % lineColors.length])
@@ -207,35 +208,55 @@ const LineGraph = (props) => {
         });
 
         //// Line Hover Interaction
-        if (processing.applyCWT && options.hover) {
+        if (processing.applyCWT && options.lineAnalysis) {
           let lineIdx = -1;
           let guideLine = null;
           let isGuidelineOn = false;
 
-          const paths = graph.selectAll("path");
-          paths.on("mouseover", function (d, idx) {
-            // 모든 라인의 스타일을 원래 스타일로 되돌리기
-            paths
-              .attr("stroke-width", 1.5)
-              .attr("opacity", "0.3")
-              .attr("cursor", "pointer");
+          const paths = graph.selectAll("path").attr("cursor", "pointer");
+          paths.on("click", function (event, d) {
+            const className = d3.select(this).node().className.baseVal;
 
-            // 마우스 오버된 라인 강조
-            d3.select(this)
-              .attr("stroke-width", 3)
-              .attr("opacity", "1")
-              .attr("cursor", "pointer");
-            lineIdx = idx;
+            for (let i = 0; i < processing.scale; i++) {
+              if (className === "line" + i) {
+                d3.selectAll(".line" + i).attr("opacity", "1");
+              } else {
+                d3.selectAll(".line" + i).attr("opacity", "0.3");
+              }
+            }
+
+            paths.attr("stroke-width", 1.5).attr("opacity", "0.3");
+            d3.select(this).attr("stroke-width", 2.5).attr("opacity", "1");
+
+            // // 클릭된 선의 x 좌표 값 가져오기
+            // const clickedPath = d3.select(this);
+            // const pathNode = clickedPath.node();
+            // const pathLength = pathNode.getTotalLength();
+            // const mouse = d3.pointer(pathNode);
           });
 
-          // 마우스가 라인 위에서 벗어날 때 스타일 원래대로 되돌리기
-          paths.on("mouseout", function () {
-            paths
-              .attr("stroke-width", 1.5)
-              .attr("opacity", "1")
-              .attr("cursor", "pointer"); 
-            lineIdx = -1;
-          });
+          // paths.on("mouseover", function () {
+          //   // 모든 라인의 스타일을 원래 스타일로 되돌리기
+          //   paths
+          //     .attr("stroke-width", 1.5)
+          //     .attr("opacity", "0.3")
+          //     .attr("cursor", "pointer");
+
+          //   // 마우스 오버된 라인 강조
+          //   d3.select(this)
+          //     .attr("stroke-width", 3)
+          //     .attr("opacity", "0.7")
+          //     .attr("cursor", "pointer");
+          // });
+
+          // // 마우스가 라인 위에서 벗어날 때 스타일 원래대로 되돌리기
+          // paths.on("mouseout", function () {
+          //   paths
+          //     .attr("stroke-width", 1.5)
+          //     .attr("opacity", "1")
+          //     .attr("cursor", "pointer");
+          //   lineIdx = -1;
+          // });
 
           // // Vertical Guideline
           // function drawGuideline(x_point) {
@@ -269,17 +290,7 @@ const LineGraph = (props) => {
           //   }
           // });
 
-          // // 마우스 클릭 시 세로 가이드 라인 생성 또는 삭제
-          // paths.on("click", function (event, d) {
-          //   const clickedPath = d3.select(this);
-
-          //   // 클릭된 선의 x 좌표 값 가져오기
-          //   //const pathNode = clickedPath.node();
-          //   //const pathLength = pathNode.getTotalLength();
-          //   //const mouse = d3.pointer(pathNode);
-
           // // 마우스 따라 이동하는 Guideline 처리
-          // });
           // svg.on("mousemove", function (event) {
           //   if (isGuidelineOn) {
           //     const point_x = d3.pointer(event)[0] - margin.left;
