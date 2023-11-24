@@ -12,13 +12,14 @@ import "./Dashboard.scss";
 
 const Dashboard = (props) => {
   const [slots, setSlots] = useState([]);
-  const [scaled_x_domain, set_scaled_x_domain] = useState();
-  const handleScaleChange = (id, scaled_x_domain) => {
+  const [zoomDomain, setZoomDomain] = useState();
+
+  const handleScaleChange = (id, zoomDomain) => {
     // trigger Spectrogram component with state
-    set_scaled_x_domain(scaled_x_domain);
+    setZoomDomain(zoomDomain);
     // update x_domain in target slot
     // will be used in spectrogram.js
-    slots[id-1].scaled_x_domain = scaled_x_domain;
+    slots[id - 1].zoomDomain = zoomDomain;
   };
 
   useEffect(() => {
@@ -85,13 +86,22 @@ const Dashboard = (props) => {
               <div class="slot-content row align-items-center d-flex pb-1">
                 {/* Line Graph */}
                 <div id="line-graph" class="px-0 py-1">
-                  <LineGraph slot={slot} handleScaleChange={handleScaleChange}/>
+                  <LineGraph
+                    slot={slot}
+                    handleScaleChange={handleScaleChange}
+                  />
                 </div>
 
                 {/* Spectrogram (only on status) */}
+                {slot.options.showSpectrogram && <hr class="my-2" />}
+
                 {slot.options.showSpectrogram && (
                   <div id="spectrogram" class="px-0 py-1">
-                    <Spectrogram slot={slot} key={scaled_x_domain} scaled_x_domain={scaled_x_domain}/>
+                    <Spectrogram
+                      slot={slot}
+                      key={zoomDomain}
+                      zoomDomain={zoomDomain}
+                    />
                   </div>
                 )}
 

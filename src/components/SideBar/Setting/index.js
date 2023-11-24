@@ -21,8 +21,8 @@ const Setting = (props) => {
     const showSpectrogram = document.getElementById("showSpectrogram");
     const showGrid = document.getElementById("showGrid");
     const spectrogramColor = document.getElementById("spectrogramColor");
-    const stftColor = document.getElementById("stftColor");
     const zooming = document.getElementById("zooming");
+    const hover = document.getElementById("hover");
     const thresholdLine = document.getElementById("thresholdLine");
 
     if (props.currentSlotId !== -1) {
@@ -33,9 +33,9 @@ const Setting = (props) => {
       showSpectrogram.checked = props.info.showSpectrogram;
       showGrid.checked = props.info.showGrid;
       spectrogramColor.value = props.info.spectrogramColor;
-      stftColor.value = props.info.stftColor;
 
       zooming.checked = props.info.zooming;
+      hover.checked = props.info.hover;
       thresholdLine.checked = props.info.thresholdLine;
     }
   }, [props.info]);
@@ -60,6 +60,7 @@ const Setting = (props) => {
       id === "showSpectrogram" ||
       id === "showGrid" ||
       id === "zooming" ||
+      id === "hover" ||
       id === "thresholdLine"
     ) {
       // Switch 버튼 고려
@@ -216,24 +217,6 @@ const Setting = (props) => {
                   </select>
                 </div>
               </div>
-
-              <div class="row d-flex accordion-component align-items-center">
-                <div class="col-md-6 justify-content-start">STFT Color</div>
-                <div class="col-md-6 d-flex justify-content-end align-items-center">
-                  <select
-                    id="stftColor"
-                    class="form-select form-select-sm legend-box"
-                    onChange={(event) => dbUpdateData(event)}
-                  >
-                    <option value="Viridis">Viridis</option>
-                    <option value="Cividis">Cividis</option>
-                    <option value="Plasma">Plasma</option>
-                    <option value="Turbo">Turbo</option>
-                    <option value="Inferno">Inferno</option>
-                    <option value="CubehelixDefault">CubehelixDefault</option>
-                  </select>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -266,6 +249,18 @@ const Setting = (props) => {
                     type="checkbox"
                     role="switch"
                     id="zooming"
+                    onChange={(event) => dbUpdateData(event)}
+                  />
+                </div>
+              </div>
+              <div class="row d-flex accordion-component align-items-center">
+                <div class="col-md-6 justify-content-start">Line Hover</div>
+                <div class="form-check form-switch col-md-6 d-flex justify-content-end align-items-center">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    id="hover"
                     onChange={(event) => dbUpdateData(event)}
                   />
                 </div>

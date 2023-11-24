@@ -34,11 +34,14 @@ const Spectrogram = (props) => {
     const processing = props.slot.processing;
     const options = props.slot.options;
 
-    if (plot.length > 0 ) {
-      const scaled_x_min = props.slot.scaled_x_domain ? props.slot.scaled_x_domain[0] : 0;
-      const scaled_x_max = props.slot.scaled_x_domain ? props.slot.scaled_x_domain[1] : plot[0].length;
-      const newPlot = plot.map(innerArray =>
-          innerArray.slice(Math.floor(scaled_x_min), Math.ceil(scaled_x_max)));
+    if (plot.length > 0) {
+      const minZoomX = props.slot.zoomDomain ? props.slot.zoomDomain[0] : 0;
+      const maxZoomX = props.slot.zoomDomain
+        ? props.slot.zoomDomain[1]
+        : plot[0].length;
+      const newPlot = plot.map((innerArray) =>
+        innerArray.slice(Math.floor(minZoomX), Math.ceil(maxZoomX))
+      );
 
       const numRows = newPlot.length;
       const numCols = newPlot[0].length;
@@ -48,8 +51,13 @@ const Spectrogram = (props) => {
       // Domain => Time Series
       const xScale = d3
         .scaleLinear()
-        .domain([scaled_x_min, scaled_x_max])
+        .domain([minZoomX, maxZoomX])
         .range([0, width]);
+
+      const yScale = d3
+        .scaleLinear()
+        .domain([0, plot.length])
+        .range([height, 0]);
 
       let colorScale;
       if (options.spectrogramColor === "Viridis") {
@@ -92,6 +100,18 @@ const Spectrogram = (props) => {
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top + height})`)
         .call(d3.axisBottom(xScale));
+
+      if (plot.length <= 6) {
+        svg
+          .append("g")
+          .attr("transform", `translate(${margin.left},${margin.top})`)
+          .call(d3.axisLeft(yScale).ticks(plot.length, "f"));
+      } else {
+        svg
+          .append("g")
+          .attr("transform", `translate(${margin.left},${margin.top})`)
+          .call(d3.axisLeft(yScale));
+      }
     }
   }, [width, props.slot]);
 

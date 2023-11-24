@@ -28,18 +28,22 @@ const LineGraph = (props) => {
   const initialWidth = getGraphWidth() - margin.left - margin.right;
   const [width, setWidth] = useState(initialWidth);
   const height = 250 - margin.top - margin.bottom;
-
+  const heightSTFT = 150 - margin.top - margin.bottom;
 
   useEffect(() => {
     window.addEventListener("resize", handleResize);
 
     const svg = d3.select(lineGraphRef.current);
+    const stftSvg = d3.select(stftGraphRef.current);
 
     // Initialize
     const raw = props.slot.data.map((list) => {
       return list.map((item) => Math.abs(item));
     });
     const plot = props.slot.plot.map((list) => {
+      return list.map((item) => Math.abs(item));
+    });
+    const sd = props.slot.sd.map((list) => {
       return list.map((item) => Math.abs(item));
     });
     const processing = props.slot.processing;
@@ -139,8 +143,11 @@ const LineGraph = (props) => {
       function onZoomed(event) {
         svg.selectAll("*").remove();
         const newXScale = event.transform.rescaleX(xScale);
+
+        // For Synchronize with Spectrogram
         const [minX, maxX] = newXScale.domain();
         props.handleScaleChange(props.slot.id, [minX, maxX]);
+
         const lineColors = d3.schemeTableau10;
         const line = d3
           .line()
@@ -148,7 +155,7 @@ const LineGraph = (props) => {
             newXScale(i) < 0
               ? 0
               : newXScale(i) >= width
-              ? newXScale(plot[0].length) - margin.right
+              ? newXScale(plot[0].length) - margin
               : newXScale(i)
           )
           .y((d) => yScale(d));
@@ -199,76 +206,87 @@ const LineGraph = (props) => {
             .attr("d", line);
         });
 
-      if (processing.applyCWT) {
-          let selected_line_idx = -1;
+        //// Line Hover Interaction
+        if (processing.applyCWT && options.hover) {
+          let lineIdx = -1;
           let guideLine = null;
           let isGuidelineOn = false;
+
           const paths = graph.selectAll("path");
           paths.on("mouseover", function (d, idx) {
-              // 모든 라인의 스타일을 원래 스타일로 되돌리기
-              paths.attr("stroke-width", 1.5);
-              // 마우스 오버된 라인 강조
-              d3.select(this)
-                  .attr("stroke-width", 3); // 강조할 라인의 스타일 변경
-              selected_line_idx = idx;
+            // 모든 라인의 스타일을 원래 스타일로 되돌리기
+            paths
+              .attr("stroke-width", 1.5)
+              .attr("opacity", "0.3")
+              .attr("cursor", "pointer");
+
+            // 마우스 오버된 라인 강조
+            d3.select(this)
+              .attr("stroke-width", 3)
+              .attr("opacity", "1")
+              .attr("cursor", "pointer");
+            lineIdx = idx;
           });
 
           // 마우스가 라인 위에서 벗어날 때 스타일 원래대로 되돌리기
           paths.on("mouseout", function () {
-              paths.attr("stroke-width", 1.5); // 모든 라인의 스타일을 원래 스타일로 되돌리기
-              selected_line_idx = -1;
+            paths
+              .attr("stroke-width", 1.5)
+              .attr("opacity", "1")
+              .attr("cursor", "pointer"); 
+            lineIdx = -1;
           });
 
-          function draw_guideline(x_point) {
-              svg.select(".guide-line").remove();
-              // 마우스 위치에 가이드 라인 생성
+          // // Vertical Guideline
+          // function drawGuideline(x_point) {
+          //   svg.select(".guide-line").remove();
+          //   // 마우스 위치에 가이드 라인 생성
 
-              if (x_point < newXScale.domain()[0] || x_point > newXScale.domain[1]){
-                  return;
-              }
-              guideLine = graph.append("line")
-                  .attr("class", "guide-line")
-                  .attr("x1", x_point)
-                  .attr("y1", 0)
-                  .attr("x2", x_point)
-                  .attr("y2", height)
-                  .attr("stroke", "red")
-                  .attr("stroke-dasharray", "3,3")
-                  .attr("stroke-width", 1)
-                  .attr("opacity", 0.7);
-          }
+          //   if (x_point <= newXScale.domain()[0] || x_point >= width) {
+          //     return;
+          //   }
+          //   guideLine = graph
+          //     .append("line")
+          //     .attr("class", "guide-line")
+          //     .attr("x1", x_point)
+          //     .attr("x2", x_point)
+          //     .attr("y1", 0)
+          //     .attr("y2", height)
+          //     .attr("stroke", "orangered")
+          //     .attr("stroke-dasharray", "3,3")
+          //     .attr("stroke-width", 1.5)
+          //     .attr("opacity", 0.7);
+          // }
 
-          // 전체 SVG에 대한 클릭 이벤트 (guildeline 추가/삭제)
-          svg.on("click", function (event, d) {
-              if (isGuidelineOn) {
-                  isGuidelineOn = false;
-                  guideLine.remove();
-                  guideLine = null;
-              } else {
-                  isGuidelineOn = true;
-              }
-          })
+          // // Click 시 Guildeline 추가 / 삭제
+          // svg.on("click", function (event, d) {
+          //   if (isGuidelineOn) {
+          //     isGuidelineOn = false;
+          //     guideLine.remove();
+          //     guideLine = null;
+          //   } else {
+          //     isGuidelineOn = true;
+          //   }
+          // });
 
-          // 마우스 클릭 시 세로 가이드 라인 생성 또는 삭제
-          paths.on("click", function (event, d) {
-              const clickedPath = d3.select(this);
+          // // 마우스 클릭 시 세로 가이드 라인 생성 또는 삭제
+          // paths.on("click", function (event, d) {
+          //   const clickedPath = d3.select(this);
 
-              // 클릭된 선의 x 좌표 값 가져오기
-              //const pathNode = clickedPath.node();
-              //const pathLength = pathNode.getTotalLength();
-              //const mouse = d3.pointer(pathNode);
+          //   // 클릭된 선의 x 좌표 값 가져오기
+          //   //const pathNode = clickedPath.node();
+          //   //const pathLength = pathNode.getTotalLength();
+          //   //const mouse = d3.pointer(pathNode);
 
-              // 마우스 따라 이동하는 이벤트 추가
-
-          });
-          svg.on("mousemove", function (event) {
-              if (isGuidelineOn) {
-                  const point_x = d3.pointer(event)[0] - margin.left;
-                  draw_guideline(point_x);
-              }
-          });
-      } // CWT end
-
+          // // 마우스 따라 이동하는 Guideline 처리
+          // });
+          // svg.on("mousemove", function (event) {
+          //   if (isGuidelineOn) {
+          //     const point_x = d3.pointer(event)[0] - margin.left;
+          //     drawGuideline(point_x);
+          //   }
+          // });
+        }
 
         //// Not CWT, but SG, Plot Raw Data for Comparison
         if (!processing.applyCWT && processing.applySD) {
@@ -327,7 +345,7 @@ const LineGraph = (props) => {
 
         //// Brush (for STFT)
         function beforeBrushStarted(event) {
-          const dx = newXScale(25) - newXScale(0); // Use a fixed width when recentering.
+          const dx = newXScale(50) - newXScale(0); // Use a fixed width when recentering.
           const [[cx]] = d3.pointers(event);
           const [x0, x1] = [cx - dx / 2, cx + dx / 2];
           const [X0, X1] = newXScale.range();
@@ -345,11 +363,13 @@ const LineGraph = (props) => {
             time = { start: parseInt(x0), end: parseInt(x1) };
           }
 
-          // TO DO
+          //////////////////////////////////////////
+          // STFT Plot
+          //////////////////////////////////////////
           // Get STFT Result
-          let stftPlot;
+          let stftResult;
           const formData = new FormData();
-          formData.append("data", JSON.stringify(raw));
+          formData.append("data", JSON.stringify(sd));
           formData.append("processing", JSON.stringify(processing));
           formData.append("time", JSON.stringify(time));
 
@@ -359,10 +379,74 @@ const LineGraph = (props) => {
               formData,
               { withCredentials: true }
             );
-            // console.log(response.data);
+            // console.log(response.data.result);
+            stftResult = response.data.result;
           } catch (error) {
             console.error("Error Uploading File:", error);
           }
+
+          let stftPlot = [];
+          for (let i = time.start; i <= time.end; i++) {
+            stftPlot.push([
+              parseInt(i - (time.start + time.end) / 2),
+              stftResult[i - time.start],
+            ]);
+          }
+
+          console.log(stftPlot);
+
+          stftSvg.selectAll("*").remove();
+
+          const graphSTFT = stftSvg
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+          // Scale
+          let xScaleSTFT = d3
+            .scaleBand()
+            .domain(stftPlot.map((d) => d[0]))
+            .range([0, width])
+            .padding(0.8);
+
+          let yScaleSTFT = d3
+            .scaleLinear()
+            .domain([0, d3.max(stftPlot, (d) => d[1])])
+            .range([heightSTFT, 0]);
+
+          const lineColorsSTFT = d3.schemeTableau10;
+
+          graphSTFT
+            .selectAll(".bar")
+            .data(stftPlot)
+            .enter()
+            .append("rect")
+            .attr("class", "bar")
+            .attr("x", (d) => xScaleSTFT(d[0]) - xScaleSTFT.bandwidth() / 2)
+            .attr("y", (d) => yScaleSTFT(d[1]))
+            .attr("width", xScaleSTFT.bandwidth())
+            .attr("height", (d) => heightSTFT - yScaleSTFT(d[1]))
+            .attr("fill", lineColorsSTFT[0]);
+
+          // Axis
+          const xAxisSTFT = d3
+            .axisBottom(xScaleSTFT)
+            .tickValues(
+              xScaleSTFT
+                .domain()
+                .filter((value) => value === 0 || value % 10 === 0)
+            );
+          const yAxisSTFT = d3.axisLeft(yScaleSTFT).ticks(6, "f");
+          stftSvg
+            .append("g")
+            .attr(
+              "transform",
+              `translate(${margin.left},${margin.top + heightSTFT})`
+            )
+            .call(xAxisSTFT);
+          stftSvg
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`)
+            .call(yAxisSTFT);
         }
 
         const brush = d3
@@ -371,7 +455,7 @@ const LineGraph = (props) => {
             [0, 0],
             [width, height],
           ])
-          .on("start brush end", brushed);
+          .on("end", brushed);
 
         if (processing.applySTFT) {
           svg
@@ -379,7 +463,7 @@ const LineGraph = (props) => {
             .attr("class", "brush")
             .attr("transform", `translate(${margin.left}, ${margin.top})`)
             .call(brush)
-            .call(brush.move, [50, 100].map(newXScale))
+            .call(brush.move, [50, 150].map(newXScale))
             .call((g) =>
               g
                 .select(".overlay")
@@ -404,19 +488,38 @@ const LineGraph = (props) => {
   }, [width, props.slot]);
 
   return (
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        justifyContent: "center",
-      }}
-    >
-      <svg
-        ref={lineGraphRef}
-        width={width + margin.left + margin.right}
-        height={height + margin.top + margin.bottom}
-      ></svg>
+    <div>
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <svg
+          ref={lineGraphRef}
+          width={width + margin.left + margin.right}
+          height={height + margin.top + margin.bottom}
+        ></svg>
+      </div>
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        {props.slot.processing.applySTFT && (
+          <svg
+            class="px-0 mt-3"
+            ref={stftGraphRef}
+            width={width + margin.left + margin.right}
+            height={heightSTFT + margin.top + margin.bottom}
+          ></svg>
+        )}
+      </div>
     </div>
   );
 };
