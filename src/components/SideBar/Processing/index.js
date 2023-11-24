@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 
-import { AiOutlineDatabase } from "react-icons/ai";
 import { FaSignal } from "react-icons/fa";
 import { FaRegImage } from "react-icons/fa6";
-import { MdNumbers } from "react-icons/md";
-import { LuFilter } from "react-icons/lu";
 import { FaRegChartBar } from "react-icons/fa6";
+import { FaObjectUngroup } from "react-icons/fa6";
 import "./Processing.scss";
 
 const Processing = (props) => {
@@ -19,9 +17,7 @@ const Processing = (props) => {
     // console.log("Loaded", props.currentSlotId, props.info);
     setProcessInfo(props.info);
 
-    const applySD = document.getElementById(
-      "applySD"
-    );
+    const applySD = document.getElementById("applySD");
     const window = document.getElementById("window");
     const degreeOfPolynomial = document.getElementById("degreeOfPolynomial");
     const applySTFT = document.getElementById("applySTFT");
@@ -333,7 +329,7 @@ const Processing = (props) => {
               aria-expanded="false"
               aria-controls="comparison-collapse"
             >
-              <FaRegChartBar class="processing-accordion-icon" />{" "}
+              <FaObjectUngroup class="processing-accordion-icon" />{" "}
               <span class="accordion-label">Comparison</span>
             </button>
           </h2>
