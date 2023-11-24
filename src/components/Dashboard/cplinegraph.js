@@ -135,18 +135,12 @@ const CompareLineGraph = (props) => {
         svg.selectAll("*").remove();
         const newXScale = event.transform.rescaleX(xScale);
         const lineColors = d3.schemeTableau10;
-
+        const yMin = yScale(Math.min(minCurrent, minTarget));
         const area = d3
           .area()
-          .x((d, i) =>
-            newXScale(i) < 0
-              ? 0
-              : newXScale(i) >= width
-              ? newXScale(currentSD[0].length) - margin
-              : newXScale(i)
-          )
-          .y0(yScale(Math.min(minCurrent, minTarget)))
-          .y1((d) => yScale(d));
+          .x((d, i) => newXScale(i) < 0 ? 0 : newXScale(i))
+          .y0(yMin)
+          .y1((d, i) => newXScale(i)>width ? yMin: yScale(d));
 
         const line = d3
           .line()
