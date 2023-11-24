@@ -393,8 +393,6 @@ const LineGraph = (props) => {
             ]);
           }
 
-          console.log(stftPlot);
-
           stftSvg.selectAll("*").remove();
 
           const graphSTFT = stftSvg

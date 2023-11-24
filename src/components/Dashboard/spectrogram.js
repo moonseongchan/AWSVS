@@ -1,6 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
-import { data2 } from "./data";
 
 const Spectrogram = (props) => {
   // To resize the width of the graph

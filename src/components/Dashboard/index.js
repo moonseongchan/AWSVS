@@ -15,10 +15,8 @@ const Dashboard = (props) => {
   const [zoomDomain, setZoomDomain] = useState();
 
   const handleScaleChange = (id, zoomDomain) => {
-    // trigger Spectrogram component with state
+    // Trigger Spectrogram component with state
     setZoomDomain(zoomDomain);
-    // update x_domain in target slot
-    // will be used in spectrogram.js
     slots[id - 1].zoomDomain = zoomDomain;
   };
 
@@ -54,12 +52,6 @@ const Dashboard = (props) => {
               />
             </div>
             <div class="slot-close-section h-100 d-flex justify-content-end align-items-center">
-              {/* <button
-                type="button"
-                class="slot-move-btn btn d-flex justify-content-end align-items-center accordion-button collapsed"
-              >
-                <BiMenu />
-              </button> */}
               <button
                 type="button"
                 class="slot-toggle-btn btn d-flex justify-content-end align-items-center accordion-button collapsed"
@@ -120,10 +112,6 @@ const Dashboard = (props) => {
                     />
                   </div>
                 )}
-
-                {/* <div id="spectrogram" class="px-0 py-0 my-1">
-                      <CompareSpectrogram currentId={slot.id} target={slot.processing.target} slots={slots}/>
-                    </div> */}
 
                 {/* PCA & Cluster */}
                 {/* <div
