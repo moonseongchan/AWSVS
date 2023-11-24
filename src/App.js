@@ -57,6 +57,7 @@ export default function App() {
         zooming: false,
         thresholdLine: false,
       },
+      scaled_x_domain: []
     };
     setIdx(idx + 1);
     setSlots([...slots, newSlot]);
