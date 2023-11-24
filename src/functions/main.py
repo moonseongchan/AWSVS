@@ -10,6 +10,8 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 import os
+from scipy.stats import moment
+from scipy.signal import find_peaks
 
 
 ####################### debug flag #######################
@@ -321,6 +323,52 @@ def WindowingFT(data,startIdx,endIdx):
     fft = np.fft.fftshift(fft) #align for 0Hz 
 
     return intervaled_signal,abs(fft)  #time domain(only windowed), freq domian
+
+def GetFeature(Data):
+    """
+    input
+        data: must be CWT results
+    output
+        F1-Fn : features
+    """
+    time_interval = 1e-9 
+
+    datalen=np.shape(Data)[0]
+    UseRatio = 4 #empirical params
+    #feature lists
+    F1, F2, F3, F4, F5, F6, F7, F8, F9, F10 = [], [], [], [], [], [], [], [], [], []
+    
+    for i in range(datalen//UseRatio):
+        pdp=abs(Data[i])
+        pdp_data = pdp / np.sum(pdp) #normalized 1
+        # pdp_data = pdp / np.max(pdp) #normalized 2
+
+        MAD = np.sum(np.arange(len(pdp_data)) * pdp_data * time_interval)
+        RMSds = np.sqrt(np.sum(((np.arange(len(pdp_data)) - MAD) ** 2) * pdp_data * time_interval))
+
+        peaks, _ = find_peaks(pdp_data)
+        energy = np.sum(np.square(pdp_data)) 
+
+        F1.append(MAD)
+        F2.append(RMSds)
+
+        F3.append(np.mean(pdp_data))
+        F4.append(np.var(pdp_data))
+        F5.append(moment(pdp_data, moment=3))
+        F6.append(moment(pdp_data, moment=4))        
+        
+        F7.append(len(peaks))
+        F8.append(energy)
+        F9.append(np.max(pdp_data))
+        F10.append(np.argmax(pdp_data))
+    
+
+    """
+    이름은 아직 F1-F10으로만 합시다
+    """
+    return F1,F2,F3,F4,F5,F6,F7,F8,F9,F10
+    
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
