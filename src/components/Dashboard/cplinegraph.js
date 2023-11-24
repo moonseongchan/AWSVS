@@ -145,7 +145,7 @@ const CompareLineGraph = (props) => {
               ? newXScale(currentSD[0].length) - margin
               : newXScale(i)
           )
-          .y0(yScale(0))
+          .y0(yScale(Math.min(minCurrent, minTarget)))
           .y1((d) => yScale(d));
 
         const line = d3
