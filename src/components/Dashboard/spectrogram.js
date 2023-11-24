@@ -36,7 +36,7 @@ const Spectrogram = (props) => {
 
     if (plot.length > 0 ) {
       const scaled_x_min = props.slot.scaled_x_domain ? props.slot.scaled_x_domain[0] : 0;
-      const scaled_x_max = props.scaled_x_domain ? props.slot.scaled_x_domain[1] : plot[0].length;
+      const scaled_x_max = props.slot.scaled_x_domain ? props.slot.scaled_x_domain[1] : plot[0].length;
       const newPlot = plot.map(innerArray =>
           innerArray.slice(Math.floor(scaled_x_min), Math.ceil(scaled_x_max)));
 
