@@ -7,7 +7,7 @@ import "./Dashboard.scss";
 const LineGraph = (props) => {
   const lineGraphRef = useRef(null);
   const stftGraphRef = useRef(null);
-  
+
   // To resize the width of the graph
   const margin = { top: 10, right: 30, bottom: 20, left: 40 };
   const getGraphWidth = () => {
@@ -28,6 +28,7 @@ const LineGraph = (props) => {
   const initialWidth = getGraphWidth() - margin.left - margin.right;
   const [width, setWidth] = useState(initialWidth);
   const height = 250 - margin.top - margin.bottom;
+
 
   useEffect(() => {
     window.addEventListener("resize", handleResize);
@@ -197,6 +198,77 @@ const LineGraph = (props) => {
             .attr("stroke-width", 1.5)
             .attr("d", line);
         });
+
+      if (processing.applyCWT) {
+          let selected_line_idx = -1;
+          let guideLine = null;
+          let isGuidelineOn = false;
+          const paths = graph.selectAll("path");
+          paths.on("mouseover", function (d, idx) {
+              // 모든 라인의 스타일을 원래 스타일로 되돌리기
+              paths.attr("stroke-width", 1.5);
+              // 마우스 오버된 라인 강조
+              d3.select(this)
+                  .attr("stroke-width", 3); // 강조할 라인의 스타일 변경
+              selected_line_idx = idx;
+          });
+
+          // 마우스가 라인 위에서 벗어날 때 스타일 원래대로 되돌리기
+          paths.on("mouseout", function () {
+              paths.attr("stroke-width", 1.5); // 모든 라인의 스타일을 원래 스타일로 되돌리기
+              selected_line_idx = -1;
+          });
+
+          function draw_guideline(x_point) {
+              svg.select(".guide-line").remove();
+              // 마우스 위치에 가이드 라인 생성
+
+              if (x_point < newXScale.domain()[0] || x_point > newXScale.domain[1]){
+                  return;
+              }
+              guideLine = graph.append("line")
+                  .attr("class", "guide-line")
+                  .attr("x1", x_point)
+                  .attr("y1", 0)
+                  .attr("x2", x_point)
+                  .attr("y2", height)
+                  .attr("stroke", "red")
+                  .attr("stroke-dasharray", "3,3")
+                  .attr("stroke-width", 1)
+                  .attr("opacity", 0.7);
+          }
+
+          // 전체 SVG에 대한 클릭 이벤트 (guildeline 추가/삭제)
+          svg.on("click", function (event, d) {
+              if (isGuidelineOn) {
+                  isGuidelineOn = false;
+                  guideLine.remove();
+                  guideLine = null;
+              } else {
+                  isGuidelineOn = true;
+              }
+          })
+
+          // 마우스 클릭 시 세로 가이드 라인 생성 또는 삭제
+          paths.on("click", function (event, d) {
+              const clickedPath = d3.select(this);
+
+              // 클릭된 선의 x 좌표 값 가져오기
+              //const pathNode = clickedPath.node();
+              //const pathLength = pathNode.getTotalLength();
+              //const mouse = d3.pointer(pathNode);
+
+              // 마우스 따라 이동하는 이벤트 추가
+
+          });
+          svg.on("mousemove", function (event) {
+              if (isGuidelineOn) {
+                  const point_x = d3.pointer(event)[0] - margin.left;
+                  draw_guideline(point_x);
+              }
+          });
+      } // CWT end
+
 
         //// Not CWT, but SG, Plot Raw Data for Comparison
         if (!processing.applyCWT && processing.applySD) {
