@@ -138,6 +138,8 @@ const LineGraph = (props) => {
       function onZoomed(event) {
         svg.selectAll("*").remove();
         const newXScale = event.transform.rescaleX(xScale);
+        const [minX, maxX] = newXScale.domain();
+        props.handleScaleChange(props.slot.id, [minX, maxX]);
         const lineColors = d3.schemeTableau10;
         const line = d3
           .line()
@@ -145,7 +147,7 @@ const LineGraph = (props) => {
             newXScale(i) < 0
               ? 0
               : newXScale(i) >= width
-              ? newXScale(plot[0].length) - margin
+              ? newXScale(plot[0].length) - margin.right
               : newXScale(i)
           )
           .y((d) => yScale(d));

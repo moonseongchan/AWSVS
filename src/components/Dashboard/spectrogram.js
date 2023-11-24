@@ -34,16 +34,21 @@ const Spectrogram = (props) => {
     const processing = props.slot.processing;
     const options = props.slot.options;
 
-    if (plot.length > 0) {
-      const numRows = plot.length;
-      const numCols = plot[0].length;
+    if (plot.length > 0 ) {
+      const scaled_x_min = props.slot.scaled_x_domain ? props.slot.scaled_x_domain[0] : 0;
+      const scaled_x_max = props.scaled_x_domain ? props.slot.scaled_x_domain[1] : plot[0].length;
+      const newPlot = plot.map(innerArray =>
+          innerArray.slice(Math.floor(scaled_x_min), Math.ceil(scaled_x_max)));
+
+      const numRows = newPlot.length;
+      const numCols = newPlot[0].length;
       const rect_width = width / numCols;
       const rect_height = height / numRows;
 
       // Domain => Time Series
       const xScale = d3
         .scaleLinear()
-        .domain([0, plot[0].length])
+        .domain([scaled_x_min, scaled_x_max])
         .range([0, width]);
 
       let colorScale;
@@ -80,7 +85,7 @@ const Spectrogram = (props) => {
             .attr("y", i * rect_height)
             .attr("width", rect_width)
             .attr("height", rect_height)
-            .style("fill", colorScale(plot[i][j]));
+            .style("fill", colorScale(newPlot[i][j]));
 
       // Axis
       svg

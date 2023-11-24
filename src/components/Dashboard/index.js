@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import LineGraph from "./linegraph.js";
 import Spectrogram from "./spectrogram.js";
 import CompareLineGraph from "./cplinegraph.js";
-import CompareSpectrogram from "./cpspectrogram.js";
+//import CompareSpectrogram from "./cpspectrogram.js";
 
 import { AiOutlineClose } from "react-icons/ai";
 import { BiExpandVertical } from "react-icons/bi";
@@ -12,6 +12,14 @@ import "./Dashboard.scss";
 
 const Dashboard = (props) => {
   const [slots, setSlots] = useState([]);
+  const [scaled_x_domain, set_scaled_x_domain] = useState();
+  const handleScaleChange = (id, scaled_x_domain) => {
+    // trigger Spectrogram component with state
+    set_scaled_x_domain(scaled_x_domain);
+    // update x_domain in target slot
+    // will be used in spectrogram.js
+    slots[id-1].scaled_x_domain = scaled_x_domain;
+  };
 
   useEffect(() => {
     // App.js에서 Info 정보 넣기
@@ -77,13 +85,13 @@ const Dashboard = (props) => {
               <div class="slot-content row align-items-center d-flex pb-1">
                 {/* Line Graph */}
                 <div id="line-graph" class="px-0 py-1">
-                  <LineGraph slot={slot} />
+                  <LineGraph slot={slot} handleScaleChange={handleScaleChange}/>
                 </div>
 
                 {/* Spectrogram (only on status) */}
                 {slot.options.showSpectrogram && (
                   <div id="spectrogram" class="px-0 py-1">
-                    <Spectrogram slot={slot} />
+                    <Spectrogram slot={slot} key={scaled_x_domain} scaled_x_domain={scaled_x_domain}/>
                   </div>
                 )}
 
