@@ -88,7 +88,7 @@ const Spectrogram = (props) => {
         for (let j = 0; j < numCols; j++)
           graph
             .append("rect")
-            .attr("class", "line" + i)
+            .attr("class", "row" + i)
             .attr("x", j * rect_width)
             .attr("y", i * rect_height)
             .attr("width", rect_width)

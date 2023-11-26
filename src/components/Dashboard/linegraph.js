@@ -209,66 +209,79 @@ const LineGraph = (props) => {
 
         //// Line Hover Interaction
         if (processing.applyCWT && options.lineAnalysis) {
-          let lineIdx = -1;
+          let selectedClass = null;
           let guideLine = null;
           let isGuidelineOn = false;
-          let hover_data = null;
+          let hoverData = null;
 
           const paths = graph.selectAll("path").attr("cursor", "pointer");
+          paths.attr("stroke-width", 1.5).attr("opacity", "0.25");
+
           paths.on("click", function (event, d) {
-            const className = d3.select(this).node().className.baseVal;
+            if (guideLine === null) {
+              selectedClass = d3.select(this).node().className.baseVal;
 
-            for (let i = 0; i < processing.scale; i++) {
-              if (className === "line" + i) {
-                d3.selectAll(".line" + i).attr("opacity", "1");
-              } else {
-                d3.selectAll(".line" + i).attr("opacity", "0.3");
+              for (let i = 0; i < processing.scale; i++) {
+                if (selectedClass === "line" + i) {
+                  d3.selectAll(".row" + i).attr("opacity", "1");
+                } else {
+                  d3.selectAll(".row" + i).attr("opacity", "0.25");
+                }
               }
+
+              paths.attr("stroke-width", 1.5).attr("opacity", "0.25");
+              d3.select(this).attr("stroke-width", 2.5).attr("opacity", "1");
+
+              hoverData = d;
             }
-
-            paths.attr("stroke-width", 1.5).attr("opacity", "0.3");
-            d3.select(this).attr("stroke-width", 2.5).attr("opacity", "1");
-
-
-            //================ guideline for cwt
-            paths.on("mouseover", function (d, idx) {
-            // 모든 라인의 스타일을 원래 스타일로 되돌리기
-            paths
-              .attr("stroke-width", 1.5)
-              .attr("opacity", "0.3")
-              .attr("cursor", "pointer");
-
-            // 마우스 오버된 라인 강조
-            d3.select(this)
-              .attr("stroke-width", 3)
-              .attr("opacity", "1")
-              .attr("cursor", "pointer");
-            lineIdx = idx;
           });
 
-          // 마우스가 라인 위에서 벗어날 때 스타일 원래대로 되돌리기
+          paths.on("mouseover", function () {
+            if (guideLine === null) {
+              for (let i = 0; i < processing.scale; i++) {
+                if (selectedClass === "line" + i) {
+                  continue;
+                } else {
+                  d3.selectAll(".line" + i)
+                    .attr("stroke-width", 1.5)
+                    .attr("opacity", "0.25");
+                }
+              }
+
+              // 마우스 오버된 라인 강조
+              if (selectedClass !== d3.select(this).node().className.baseVal) {
+                d3.select(this).attr("stroke-width", 2).attr("opacity", "0.7");
+              }
+            }
+          });
+
           paths.on("mouseout", function () {
-            paths
-              .attr("stroke-width", 1.5)
-              .attr("opacity", "1")
-              .attr("cursor", "pointer");
-            lineIdx = -1;
+            if (guideLine === null) {
+              for (let i = 0; i < processing.scale; i++) {
+                if (selectedClass === "line" + i) {
+                  continue;
+                } else {
+                  d3.selectAll(".line" + i)
+                    .attr("stroke-width", 1.5)
+                    .attr("opacity", "0.25");
+                }
+              }
+            }
           });
 
           // Vertical Guideline
           function drawGuideline(x_point) {
-            if(svg.select(".guide-line")){
+            if (svg.select(".guide-line")) {
               svg.select(".guide-line").remove();
             }
-            if(svg.select(".hover-point")){
+            if (svg.select(".hover-point")) {
               svg.select(".hover-point").remove();
               svg.select(".hover-box").remove();
               svg.select(".hover-text").remove();
             }
 
             // 마우스 위치에 가이드 라인 생성
-            if (x_point <= 0 || x_point >= width
-                || hover_data===null ) {
+            if (x_point <= 0 || x_point >= width || hoverData === null) {
               return;
             }
             guideLine = graph
@@ -284,48 +297,43 @@ const LineGraph = (props) => {
               .attr("opacity", 0.7);
 
             const idx = Math.floor(newXScale.invert(x_point));
-            const hover_value = hover_data[idx];
-            const hover_point = graph
-                .append("circle")
-                .attr("class", "hover-point")
-                .attr("cx", x_point)
-                .attr("cy", yScale(hover_value))
-                .attr("r", 2)
-                .attr("fill","red");
+            const hoverValue = hoverData[idx];
+            const hoverPoint = graph
+              .append("circle")
+              .attr("class", "hover-point")
+              .attr("cx", x_point)
+              .attr("cy", yScale(hoverValue))
+              .attr("r", 2)
+              .attr("fill", "red");
 
-
-            const hover_text = graph
-                .append("text")
-                .attr("class", "hover-text")
-                .text(d3.format(".1f")(hover_value))
-                .attr('x', x_point + 20)
-                .attr('y', yScale(hover_value) -20)
-                .attr('font-size', '15px')
-                .attr("text-anchor", "middle") // 텍스트 정렬 방식
-                .attr("fill", "red")
-                .style("font-weight", "bold"); // 텍스트 색상
+            const hoverText = graph
+              .append("text")
+              .attr("class", "hover-text")
+              .text(d3.format(".1f")(hoverValue))
+              .attr("x", x_point + 20)
+              .attr("y", yScale(hoverValue) - 20)
+              .attr("font-size", "15px")
+              .attr("text-anchor", "middle") // 텍스트 정렬 방식
+              .attr("fill", "red")
+              .style("font-weight", "bold"); // 텍스트 색상
           }
 
-          // Click 시 Guildeline 추가 / 삭제
-          svg.on("click", function (event, d) {
-            if (isGuidelineOn && guideLine) {
+          // Click 시 Guildeline 처리
+          svg.on("click", function () {
+            if (isGuidelineOn) {
               isGuidelineOn = false;
-              guideLine.remove();
-              guideLine = null;
+              if (guideLine !== null) {
+                guideLine.remove();
+                guideLine = null;
+              }
               if (svg.select(".hover-point")) {
-                  svg.select(".hover-point").remove();
-                  svg.select(".hover-box").remove();
-                  svg.select(".hover-text").remove();
+                svg.select(".hover-point").remove();
+                svg.select(".hover-box").remove();
+                svg.select(".hover-text").remove();
               }
             } else {
               isGuidelineOn = true;
             }
-          });
-
-          // 마우스 클릭 시 데이터와 인덱스 선택
-          paths.on("click", function (event, d) {
-            const selectedIndex =paths.data().indexOf(d);
-            hover_data = d;
           });
 
           svg.on("mousemove", function (event) {
@@ -334,10 +342,6 @@ const LineGraph = (props) => {
               drawGuideline(point_x);
             }
           });
-
-          });
-
-
         }
 
         //// Not CWT, but SG, Plot Raw Data for Comparison
