@@ -135,7 +135,8 @@ const LineGraph = (props) => {
           [0, 0],
           [width, height],
         ])
-        .on("zoom", onZoomed);
+        .on("zoom", onZoomed)
+        .on("end", ZoomEnded);
 
       // Initialize Zoom Behavior
       svg.call(zoomBehavior.scaleTo, 1);
@@ -144,11 +145,6 @@ const LineGraph = (props) => {
       function onZoomed(event) {
         svg.selectAll("*").remove();
         const newXScale = event.transform.rescaleX(xScale);
-
-        // For Synchronize with Spectrogram
-        const [minX, maxX] = newXScale.domain();
-        props.handleScaleChange(props.slot.id, [minX, maxX]);
-
         const lineColors = d3.schemeTableau10;
         const colorLength = cwtGreens.length;
         const cwtColors = cwtGreens.slice(
@@ -572,6 +568,14 @@ const LineGraph = (props) => {
         } else {
           svg.on(".brush", null);
         }
+      }
+
+      function ZoomEnded (event) {
+        const newXScale = event.transform.rescaleX(xScale);
+
+        // For Synchronize with Spectrogram
+        const [minX, maxX] = newXScale.domain();
+        props.handleScaleChange(props.slot.id, [minX, maxX]);
       }
 
       // Handle Zooming Interaction Event
