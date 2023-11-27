@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import * as d3 from "d3";
 
+import { cwtGreens } from "./cwtcolors";
 import "./Dashboard.scss";
 
 const LineGraph = (props) => {
@@ -149,6 +150,11 @@ const LineGraph = (props) => {
         props.handleScaleChange(props.slot.id, [minX, maxX]);
 
         const lineColors = d3.schemeTableau10;
+        const colorLength = cwtGreens.length;
+        const cwtColors = cwtGreens.slice(
+          Math.max(0, colorLength - 160),
+          colorLength
+        );
         const line = d3
           .line()
           .x((d, i) =>
@@ -196,16 +202,50 @@ const LineGraph = (props) => {
             .attr("opacity", ".2");
         }
 
-        plot.forEach((d, idx) => {
-          graph
-            .append("path")
-            .attr("class", "line" + idx)
-            .datum(d)
-            .attr("fill", "none")
-            .attr("stroke", lineColors[idx % lineColors.length])
-            .attr("stroke-width", 1.5)
-            .attr("d", line);
-        });
+        //// CWT일 때와 아닐 때에 Graph Plot 처리
+        if (processing.applyCWT) {
+          plot.forEach((d, idx) => {
+            graph
+              .append("path")
+              .attr("class", "line" + idx)
+              .datum(d)
+              .attr("fill", "none")
+              .attr(
+                "stroke",
+                cwtColors[
+                  parseInt(((idx + 1) * (cwtColors.length - 1)) / plot.length)
+                ]
+              )
+              .attr("stroke-width", 1.5)
+              .attr("d", line);
+          });
+        } else {
+          plot.forEach((d, idx) => {
+            graph
+              .append("path")
+              .attr("class", "line" + idx)
+              .datum(d)
+              .attr("fill", "none")
+              .attr("stroke", lineColors[idx % lineColors.length])
+              .attr("stroke-width", 1.5)
+              .attr("d", line);
+          });
+        }
+
+        //// Not CWT, but SG, Plot Raw Data for Comparison
+        if (!processing.applyCWT && processing.applySD) {
+          // Raw Data 고정 (Signal Denoising만 On되어 있을 때)
+          raw.forEach((d, idx) => {
+            graph
+              .append("path")
+              .datum(d)
+              .attr("fill", "none")
+              .attr("stroke", lineColors[idx % lineColors.length])
+              .attr("stroke-width", 2)
+              .attr("opacity", "0.5")
+              .attr("d", line);
+          });
+        }
 
         //// Line Hover Interaction
         if (processing.applyCWT && options.lineAnalysis) {
@@ -215,9 +255,9 @@ const LineGraph = (props) => {
           let hoverData = null;
 
           const paths = graph.selectAll("path").attr("cursor", "pointer");
-          paths.attr("stroke-width", 1.5).attr("opacity", "0.25");
+          paths.attr("stroke-width", 1.5).attr("opacity", "0.5");
 
-          paths.on("click", function (event, d) {
+          paths.on("click", function (event, data) {
             if (guideLine === null) {
               selectedClass = d3.select(this).node().className.baseVal;
 
@@ -225,14 +265,22 @@ const LineGraph = (props) => {
                 if (selectedClass === "line" + i) {
                   d3.selectAll(".row" + i).attr("opacity", "1");
                 } else {
-                  d3.selectAll(".row" + i).attr("opacity", "0.25");
+                  d3.selectAll(".row" + i).attr("opacity", "0.5");
+                  d3.selectAll(".line" + i)
+                    .attr(
+                      "stroke",
+                      cwtColors[
+                        parseInt((i * (cwtColors.length - 1)) / plot.length)
+                      ]
+                    )
+                    .attr("stroke-width", 1.5)
+                    .attr("opacity", "0.5");
                 }
               }
 
-              paths.attr("stroke-width", 1.5).attr("opacity", "0.25");
-              d3.select(this).attr("stroke-width", 2.5).attr("opacity", "1");
-
-              hoverData = d;
+              // d3.select(this).attr("stroke-width", 2.5).attr("opacity", "1");
+              d3.select(this).attr("stroke", "orangered").attr("opacity", "1");
+              hoverData = data;
             }
           });
 
@@ -243,14 +291,20 @@ const LineGraph = (props) => {
                   continue;
                 } else {
                   d3.selectAll(".line" + i)
+                    .attr(
+                      "stroke",
+                      cwtColors[
+                        parseInt((i * cwtColors.length - 1) / plot.length)
+                      ]
+                    )
                     .attr("stroke-width", 1.5)
-                    .attr("opacity", "0.25");
+                    .attr("opacity", "0.5");
                 }
               }
 
               // 마우스 오버된 라인 강조
               if (selectedClass !== d3.select(this).node().className.baseVal) {
-                d3.select(this).attr("stroke-width", 2).attr("opacity", "0.7");
+                d3.select(this).attr("stroke-width", 2).attr("opacity", "0.75");
               }
             }
           });
@@ -262,8 +316,14 @@ const LineGraph = (props) => {
                   continue;
                 } else {
                   d3.selectAll(".line" + i)
+                    .attr(
+                      "stroke",
+                      cwtColors[
+                        parseInt((i * cwtColors.length - 1) / plot.length)
+                      ]
+                    )
                     .attr("stroke-width", 1.5)
-                    .attr("opacity", "0.25");
+                    .attr("opacity", "0.5");
                 }
               }
             }
@@ -341,21 +401,6 @@ const LineGraph = (props) => {
               const point_x = d3.pointer(event)[0] - margin.left;
               drawGuideline(point_x);
             }
-          });
-        }
-
-        //// Not CWT, but SG, Plot Raw Data for Comparison
-        if (!processing.applyCWT && processing.applySD) {
-          // Raw Data 고정 (Signal Denoising만 On되어 있을 때)
-          raw.forEach((d, idx) => {
-            graph
-              .append("path")
-              .datum(d)
-              .attr("fill", "none")
-              .attr("stroke", lineColors[idx % lineColors.length])
-              .attr("stroke-width", 2)
-              .attr("opacity", "0.5")
-              .attr("d", line);
           });
         }
 
