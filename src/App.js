@@ -43,8 +43,8 @@ export default function App() {
         compare: false,
         target: null,
         // TO-DO (기본값 변경)
-        xFeature: null,
-        yFeature: null,
+        xFeature: "NoP",
+        yFeature: "EoS",
       },
       // Setting
       options: {

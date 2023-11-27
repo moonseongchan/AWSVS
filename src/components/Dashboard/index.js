@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import LineGraph from "./linegraph.js";
 import Spectrogram from "./spectrogram.js";
-import CompareLineGraph from "./cplinegraph.js";
+import ComparisonGraph from "./cpgraph.js";
 //import CompareSpectrogram from "./cpspectrogram.js";
 
 import { AiOutlineClose } from "react-icons/ai";
@@ -103,12 +103,14 @@ const Dashboard = (props) => {
                 )}
 
                 {slot.processing.compare && slot.processing.target !== null && (
-                  <div id="line-graph" class="px-0 py-1">
-                    <CompareLineGraph
-                      currentId={slot.id}
-                      targetId={slot.processing.target}
-                      slots={slots}
-                      slot={slot}
+                  <div id="compare-line-graph" class="px-0 py-1">
+                    <ComparisonGraph
+                      currentSlot={slot}
+                      targetSlot={
+                        slots.filter(
+                          (temp) => temp.id === slot.processing.target
+                        )[0]
+                      }
                     />
                   </div>
                 )}

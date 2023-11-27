@@ -187,6 +187,26 @@ def get_stft():
     # return jsonify({'result': result})
     return jsonify({'result': freqDomain.tolist()})
 
+
+@app.route('/feature', methods=['POST'])
+def get_feature():
+    data = np.array(json.loads(request.form['data']))
+    # print(data)
+
+    if len(data) > 100: # if 1D array
+        data = data.reshape((1, -1))
+
+    F7, F8, F9, F10 = GetFeature(data)
+
+    # print()
+    # print("F7 :", F7)
+    # print("F8 :", F8)
+    # print("F9 :", F9)
+    # print("F10 :", F10)
+
+    return jsonify({'NoP': F7, 'EoS': F8, 'MPoS': F9, 'MPIoS': F10})
+
+
 def GetCirAmplitude(CIR):
     """
     #biref:  Get amplitude from Complex data
@@ -338,7 +358,7 @@ def GetFeature(Data):
     time_interval = 1e-9 
 
     datalen=np.shape(Data)[0]
-    UseRatio = 4 #empirical params
+    UseRatio = 2 #empirical params
     #feature lists
     F1, F2, F3, F4, F5, F6, F7, F8, F9, F10 = [], [], [], [], [], [], [], [], [], []
     
@@ -361,16 +381,17 @@ def GetFeature(Data):
         F5.append(moment(pdp_data, moment=3))
         F6.append(moment(pdp_data, moment=4))        
         
-        F7.append(len(peaks))
-        F8.append(energy)
-        F9.append(np.max(pdp_data))
-        F10.append(np.argmax(pdp_data))
+        F7.append(int(len(peaks)))
+        F8.append(float(energy))
+        F9.append(float(np.max(pdp_data)))
+        F10.append(int(np.argmax(pdp_data)))
     
 
     """
     이름은 아직 F1-F10으로만 합시다
     """
-    return F1,F2,F3,F4,F5,F6,F7,F8,F9,F10
+    # return F1,F2,F3,F4,F5,F6,F7,F8,F9,F10
+    return F7,F8,F9,F10
     
 
 

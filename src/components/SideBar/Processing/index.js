@@ -369,12 +369,10 @@ const Processing = (props) => {
                     class="form-select form-select-sm legend-box"
                     onChange={(event) => dbUpdateData(event)}
                   >
-                    <option value="cgau1">cgau1</option>
-                    <option value="cmor">cmor</option>
-                    <option value="gaus1">gaus1</option>
-                    <option value="mexh">mexh</option>
-                    <option value="morl">morl</option>
-                    <option value="shan">shan</option>
+                    <option value="NoP">Number of Peaks</option>
+                    <option value="EoS">Energy of Signal</option>
+                    <option value="MPoS">Max Power of Signal</option>
+                    <option value="MPIoS">Max Power Index of Signal</option>
                   </select>
                 </div>
               </div>
@@ -386,12 +384,10 @@ const Processing = (props) => {
                     class="form-select form-select-sm legend-box"
                     onChange={(event) => dbUpdateData(event)}
                   >
-                    <option value="cgau1">cgau1</option>
-                    <option value="cmor">cmor</option>
-                    <option value="gaus1">gaus1</option>
-                    <option value="mexh">mexh</option>
-                    <option value="morl">morl</option>
-                    <option value="shan">shan</option>
+                    <option value="NoP">Number of Peaks</option>
+                    <option value="EoS">Energy of Signal</option>
+                    <option value="MPoS">Max Power of Signal</option>
+                    <option value="MPIoS">Max Power Index of Signal</option>
                   </select>
                 </div>
               </div>
