@@ -150,3 +150,47 @@ rect.selection {
     stroke-opacity: 1;
     fill-opacity: 0.15;
 }
+
+.divider {
+    display: flex;
+    text-align: center !important;
+    font-size: large;
+    vertical-align: middle;
+    align-items: center !important;
+    align-content: center;
+    line-height: inherit !important;
+
+    &:before,
+    &:after {
+        content: "";
+        flex: 1;
+    }
+}
+
+// Base line
+.line {
+    align-items: center;
+    margin: 1em -1em;
+
+    &:before {
+        height: 1px;
+        margin: 0.125rem 1rem 0rem 0rem;
+    }
+
+    &:after {
+        height: 1px;
+        margin: 0.125rem 0rem 0rem 1rem;
+    }
+}
+
+.double-razor {
+
+    &:before,
+    &:after {
+        height: 3px;
+        box-shadow:
+            0 -0.5px 0 black,
+            0 0.5px 0 black;
+        border-width: 0;
+    }
+}

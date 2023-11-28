@@ -75,7 +75,7 @@ const Dashboard = (props) => {
           <div id={`slot${slot.id}-body`} class="accordion-collapse collapse">
             <div class="dashboard-body accordion-body">
               {/* Slot Content */}
-              <div class="slot-content row align-items-center d-flex pb-1">
+              <div class="slot-content row align-items-center d-flex pb-1 justify-content-center">
                 {/* Line Graph */}
                 <div id="line-graph" class="px-0 py-1">
                   <LineGraph
@@ -85,7 +85,7 @@ const Dashboard = (props) => {
                 </div>
 
                 {/* Spectrogram (only on status) */}
-                {slot.options.showSpectrogram && <hr class="my-2" />}
+                {/* {slot.options.showSpectrogram && <hr class="my-2" />} */}
 
                 {slot.options.showSpectrogram && (
                   <div id="spectrogram" class="px-0 py-1">
@@ -99,7 +99,9 @@ const Dashboard = (props) => {
 
                 {/* Comparison (only on status) */}
                 {slot.processing.compare && slot.processing.target !== null && (
-                  <hr class="my-2" />
+                  <div
+                    class="my-2 divider line double-razor" contenteditable
+                  >Comparison</div>
                 )}
 
                 {slot.processing.compare && slot.processing.target !== null && (

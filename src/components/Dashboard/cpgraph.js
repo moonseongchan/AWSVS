@@ -525,12 +525,17 @@ const ComparisonGraph = (props) => {
             } else {
               cfCurrentLower += 1;
             }
-            currentError += parseFloat(
-              Math.abs(a * d.__data__[0] - d.__data__[1] + b) /
-                Math.sqrt(a * a + 1)
-            );
+
+            if (a === Infinity || b === Infinity) {
+              currentError += parseFloat(Math.abs(xCfPoint0 - d.__data__[0]));
+            } else {
+              currentError += parseFloat(
+                Math.abs(a * d.__data__[0] - d.__data__[1] + b) /
+                  Math.sqrt(a * a + 1)
+              );
+            }
           });
-          currentError /= currentPoints._groups.length;
+          currentError /= currentPoints._groups[0].length;
 
           // Count Target Point (Upper & Lower)
           const targetPoints = d3.selectAll(".targetPoint");
@@ -542,21 +547,29 @@ const ComparisonGraph = (props) => {
             } else {
               cfTargetLower += 1;
             }
-            targetError += parseFloat(
-              Math.abs(a * d.__data__[0] - d.__data__[1] + b) /
-                Math.sqrt(a * a + 1)
-            );
-          });
-          targetError /= targetPoints._groups.length;
 
-          // console.log("Current :", cfCurrentUpper, "/", cfCurrentLower);
-          // console.log("Target :", cfTargetUpper, "/", cfTargetLower);
+            if (a === Infinity || b === Infinity) {
+              targetError += parseFloat(Math.abs(xCfPoint0 - d.__data__[0]));
+            } else {
+              targetError += parseFloat(
+                Math.abs(a * d.__data__[0] - d.__data__[1] + b) /
+                  Math.sqrt(a * a + 1)
+              );
+            }
+          });
+          targetError /= targetPoints._groups[0].length;
 
           cfCurrentUpperRate =
             cfCurrentUpper / (cfCurrentUpper + cfCurrentLower);
           cfCurrentLowerRate = 1 - cfCurrentUpperRate;
           cfTargetUpperRate = cfTargetUpper / (cfTargetUpper + cfTargetLower);
           cfTargetLowerRate = 1 - cfTargetUpperRate;
+
+          // console.log("Current :", cfCurrentUpper, "/", cfCurrentLower);
+          // console.log("Target :", cfTargetUpper, "/", cfTargetLower);
+          // console.log("Current :", cfCurrentUpperRate, "/", cfCurrentLowerRate);
+          // console.log("Target :", cfTargetUpperRate, "/", cfTargetLowerRate);
+          // console.log(currentError, targetError);
 
           ///////////////////////////////////////////////////////////
           // Confusion Matrix
@@ -577,6 +590,17 @@ const ComparisonGraph = (props) => {
             )
             .attr("stroke", "black")
             .attr("stroke-width", "0.05rem");
+
+          // For Confusion Matrix Constraint
+          if (cfCurrentUpperRate < 0.5) {
+            const temp1 = cfCurrentUpperRate;
+            cfCurrentUpperRate = cfCurrentLowerRate;
+            cfCurrentLowerRate = temp1;
+
+            const temp2 = cfTargetUpperRate;
+            cfTargetUpperRate = cfTargetLowerRate;
+            cfTargetLowerRate = temp2;
+          }
 
           let confusionMatrix = [
             [cfCurrentUpperRate, cfCurrentLowerRate],
@@ -673,7 +697,7 @@ const ComparisonGraph = (props) => {
             .attr("transform", `translate(${cpWidthGap / 2},${0})`)
             .call(d3.axisLeft(yScaleBar).ticks(6, "f"));
 
-          console.log(currentError, targetError);
+          // console.log(currentError, targetError);
 
           errBarGraph
             .append("g")
