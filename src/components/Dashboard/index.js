@@ -16,11 +16,13 @@ const Dashboard = (props) => {
 
   const handleScaleChange = (id, zoomDomain) => {
     // Trigger Spectrogram component with state
-    setZoomDomain(zoomDomain);
     slots.forEach((slot, i)=> {
       if(slot.id == id){
         slots[i].zoomDomain = zoomDomain;
+        setZoomDomain(zoomDomain);
+        return;
       }
+
     });
   };
 
@@ -95,8 +97,7 @@ const Dashboard = (props) => {
                   <div id="spectrogram" class="px-0 py-1">
                     <Spectrogram
                       slot={slot}
-                      key={zoomDomain}
-                      zoomDomain={zoomDomain}
+                      key={slot.zoomDomain}
                     />
                   </div>
                 )}
