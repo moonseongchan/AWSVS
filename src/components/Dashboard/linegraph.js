@@ -570,7 +570,7 @@ const LineGraph = (props) => {
         }
       }
 
-      function ZoomEnded (event) {
+      function ZoomEnded(event) {
         const newXScale = event.transform.rescaleX(xScale);
 
         // For Synchronize with Spectrogram

@@ -254,7 +254,9 @@ const Setting = (props) => {
                 </div>
               </div>
               <div class="row d-flex accordion-component align-items-center">
-                <div class="col-md-6 justify-content-start">Line Analysis (CWT)</div>
+                <div class="col-md-6 justify-content-start">
+                  Line Analysis (CWT)
+                </div>
                 <div class="form-check form-switch col-md-6 d-flex justify-content-end align-items-center">
                   <input
                     class="form-check-input"
