@@ -45,7 +45,7 @@ const Spectrogram = (props) => {
       const newPlot = plot.map((innerArray) =>
         innerArray.slice(Math.floor(minZoomX), Math.ceil(maxZoomX))
       );
-      
+
       // console.log(minZoomX, maxZoomX);
       // console.log(newPlot);
 

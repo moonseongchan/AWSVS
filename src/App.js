@@ -64,8 +64,16 @@ export default function App() {
   };
 
   const removeSlot = (slotId) => {
-    const updatedSlots = slots.filter((slot) => slot.id !== slotId);
-    setSlots(updatedSlots);
+    const isTarget = slots.find((slot) => slot.processing.target === slotId);
+    // console.log(isTarget);
+    if (isTarget === undefined) {
+      const updatedSlots = slots.filter((slot) => slot.id !== slotId);
+      setSlots(updatedSlots);
+    } else {
+      alert(
+        "This slot is currently assigned to target in another slot, So cannot be deleted."
+      );
+    }
   };
 
   return (
