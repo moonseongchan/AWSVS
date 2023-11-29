@@ -34,13 +34,20 @@ const Spectrogram = (props) => {
     const options = props.slot.options;
 
     if (plot.length > 0) {
-      const minZoomX = props.slot.zoomDomain ? props.slot.zoomDomain[0] : 0;
+      const minZoomX = props.slot.zoomDomain
+        ? props.slot.zoomDomain[0] < 0
+          ? 0
+          : props.slot.zoomDomain[0]
+        : 0;
       const maxZoomX = props.slot.zoomDomain
         ? props.slot.zoomDomain[1]
         : plot[0].length;
       const newPlot = plot.map((innerArray) =>
         innerArray.slice(Math.floor(minZoomX), Math.ceil(maxZoomX))
       );
+      
+      // console.log(minZoomX, maxZoomX);
+      // console.log(newPlot);
 
       const numRows = newPlot.length;
       const numCols = newPlot[0].length;
