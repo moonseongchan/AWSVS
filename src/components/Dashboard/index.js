@@ -16,13 +16,12 @@ const Dashboard = (props) => {
 
   const handleScaleChange = (id, zoomDomain) => {
     // Trigger Spectrogram component with state
-    slots.forEach((slot, i)=> {
-      if(slot.id == id){
+    slots.forEach((slot, i) => {
+      if (slot.id == id) {
         slots[i].zoomDomain = zoomDomain;
         setZoomDomain(zoomDomain);
         return;
       }
-
     });
   };
 
@@ -95,18 +94,15 @@ const Dashboard = (props) => {
 
                 {slot.options.showSpectrogram && (
                   <div id="spectrogram" class="px-0 py-1">
-                    <Spectrogram
-                      slot={slot}
-                      key={slot.zoomDomain}
-                    />
+                    <Spectrogram slot={slot} key={slot.zoomDomain} />
                   </div>
                 )}
 
                 {/* Comparison (only on status) */}
                 {slot.processing.compare && slot.processing.target !== null && (
-                  <div
-                    class="my-2 divider line double-razor" contenteditable
-                  >Comparison</div>
+                  <div class="my-2 divider line double-razor" contenteditable>
+                    Comparison
+                  </div>
                 )}
 
                 {slot.processing.compare && slot.processing.target !== null && (

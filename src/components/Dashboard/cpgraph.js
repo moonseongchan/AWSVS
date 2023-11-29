@@ -520,15 +520,21 @@ const ComparisonGraph = (props) => {
           let cfCurrentUpper = 0;
           let cfCurrentLower = 0;
           currentPoints._groups[0].forEach((d) => {
-            if (d.__data__[1] >= d.__data__[0] * a + b) {
-              cfCurrentUpper += 1;
-            } else {
-              cfCurrentLower += 1;
-            }
-
             if (a === Infinity || b === Infinity) {
+              if (d.__data__[0] - xCfPoint0 < 0) {
+                cfCurrentUpper += 1;
+              } else {
+                cfCurrentLower += 1;
+              }
+
               currentError += parseFloat(Math.abs(xCfPoint0 - d.__data__[0]));
             } else {
+              if (d.__data__[1] >= d.__data__[0] * a + b) {
+                cfCurrentUpper += 1;
+              } else {
+                cfCurrentLower += 1;
+              }
+
               currentError += parseFloat(
                 Math.abs(a * d.__data__[0] - d.__data__[1] + b) /
                   Math.sqrt(a * a + 1)
@@ -542,15 +548,21 @@ const ComparisonGraph = (props) => {
           let cfTargetUpper = 0;
           let cfTargetLower = 0;
           targetPoints._groups[0].forEach((d) => {
-            if (d.__data__[1] >= d.__data__[0] * a + b) {
-              cfTargetUpper += 1;
-            } else {
-              cfTargetLower += 1;
-            }
-
             if (a === Infinity || b === Infinity) {
+              if (d.__data__[0] - xCfPoint0 < 0) {
+                cfTargetUpper += 1;
+              } else {
+                cfTargetLower += 1;
+              }
+
               targetError += parseFloat(Math.abs(xCfPoint0 - d.__data__[0]));
             } else {
+              if (d.__data__[1] >= d.__data__[0] * a + b) {
+                cfTargetUpper += 1;
+              } else {
+                cfTargetLower += 1;
+              }
+
               targetError += parseFloat(
                 Math.abs(a * d.__data__[0] - d.__data__[1] + b) /
                   Math.sqrt(a * a + 1)
@@ -579,6 +591,9 @@ const ComparisonGraph = (props) => {
           const cmColorScale = d3
             .scaleSequential(d3.interpolateBlues)
             .domain([0, 1]);
+          const cmValueColorScale = d3
+            .scaleSequential(d3.interpolateGreys)
+            .domain([1, 0]);
           const cmGraph = cpScatterSvg
             .append("g")
             .attr("class", "cmGraph")
@@ -618,6 +633,43 @@ const ComparisonGraph = (props) => {
                 .attr("fill", cmColorScale(confusionMatrix[i][j]));
             }
           }
+
+          // Plot Value
+          cmGraph
+            .append("text")
+            .attr("x", cpWidthGap / 2 + cpInfoWidth / 4)
+            .attr("y", cpHeightGap + cpCmHeight / 4)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "0.75rem")
+            .attr("stroke", cmValueColorScale(cfCurrentUpperRate))
+            .text(cfCurrentUpperRate);
+
+          cmGraph
+            .append("text")
+            .attr("x", cpWidthGap / 2 + (cpInfoWidth * 3) / 4)
+            .attr("y", cpHeightGap + cpCmHeight / 4)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "0.75rem")
+            .attr("stroke", cmValueColorScale(cfCurrentLowerRate))
+            .text(cfCurrentLowerRate);
+
+          cmGraph
+            .append("text")
+            .attr("x", cpWidthGap / 2 + cpInfoWidth / 4)
+            .attr("y", cpHeightGap + (cpCmHeight * 3) / 4)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "0.75rem")
+            .attr("stroke", cmValueColorScale(cfTargetUpperRate))
+            .text(cfTargetUpperRate);
+
+          cmGraph
+            .append("text")
+            .attr("x", cpWidthGap / 2 + (cpInfoWidth * 3) / 4)
+            .attr("y", cpHeightGap + (cpCmHeight * 3) / 4)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "0.75rem")
+            .attr("stroke", cmValueColorScale(cfTargetLowerRate))
+            .text(cfTargetLowerRate);
 
           // Confusion Matrix Label
           cmGraph
