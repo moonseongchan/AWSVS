@@ -642,7 +642,7 @@ const ComparisonGraph = (props) => {
             .attr("text-anchor", "middle")
             .attr("font-size", "0.75rem")
             .attr("stroke", cmValueColorScale(cfCurrentUpperRate))
-            .text(cfCurrentUpperRate);
+            .text(cfCurrentUpperRate.toFixed(4));
 
           cmGraph
             .append("text")
@@ -651,7 +651,7 @@ const ComparisonGraph = (props) => {
             .attr("text-anchor", "middle")
             .attr("font-size", "0.75rem")
             .attr("stroke", cmValueColorScale(cfCurrentLowerRate))
-            .text(cfCurrentLowerRate);
+            .text(cfCurrentLowerRate.toFixed(4));
 
           cmGraph
             .append("text")
@@ -660,7 +660,7 @@ const ComparisonGraph = (props) => {
             .attr("text-anchor", "middle")
             .attr("font-size", "0.75rem")
             .attr("stroke", cmValueColorScale(cfTargetUpperRate))
-            .text(cfTargetUpperRate);
+            .text(cfTargetUpperRate.toFixed(4));
 
           cmGraph
             .append("text")
@@ -669,7 +669,7 @@ const ComparisonGraph = (props) => {
             .attr("text-anchor", "middle")
             .attr("font-size", "0.75rem")
             .attr("stroke", cmValueColorScale(cfTargetLowerRate))
-            .text(cfTargetLowerRate);
+            .text(cfTargetLowerRate.toFixed(4));
 
           // Confusion Matrix Label
           cmGraph
