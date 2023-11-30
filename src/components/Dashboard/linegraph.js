@@ -203,7 +203,7 @@ const LineGraph = (props) => {
           plot.forEach((d, idx) => {
             graph
               .append("path")
-              .attr("class", "line" + idx)
+              .attr("class", "line" + idx + "-" + props.currentId)
               .datum(d)
               .attr("fill", "none")
               .attr(
@@ -219,7 +219,7 @@ const LineGraph = (props) => {
           plot.forEach((d, idx) => {
             graph
               .append("path")
-              .attr("class", "line" + idx)
+              .attr("class", "line" + idx + "-" + props.currentId)
               .datum(d)
               .attr("fill", "none")
               .attr("stroke", lineColors[idx % lineColors.length])
@@ -258,11 +258,17 @@ const LineGraph = (props) => {
               selectedClass = d3.select(this).node().className.baseVal;
 
               for (let i = 0; i < processing.scale; i++) {
-                if (selectedClass === "line" + i) {
-                  d3.selectAll(".row" + i).attr("opacity", "1");
+                if (selectedClass === "line" + i + "-" + props.currentId) {
+                  d3.selectAll(".row" + i + "-" + props.currentId).attr(
+                    "opacity",
+                    "1"
+                  );
                 } else {
-                  d3.selectAll(".row" + i).attr("opacity", "0.5");
-                  d3.selectAll(".line" + i)
+                  d3.selectAll(".row" + i + "-" + props.currentId).attr(
+                    "opacity",
+                    "0.5"
+                  );
+                  d3.selectAll(".line" + i + "-" + props.currentId)
                     .attr(
                       "stroke",
                       cwtColors[
@@ -283,10 +289,10 @@ const LineGraph = (props) => {
           paths.on("mouseover", function () {
             if (guideLine === null) {
               for (let i = 0; i < processing.scale; i++) {
-                if (selectedClass === "line" + i) {
+                if (selectedClass === "line" + i + "-" + props.currentId) {
                   continue;
                 } else {
-                  d3.selectAll(".line" + i)
+                  d3.selectAll(".line" + i + "-" + props.currentId)
                     .attr(
                       "stroke",
                       cwtColors[
@@ -308,10 +314,10 @@ const LineGraph = (props) => {
           paths.on("mouseout", function () {
             if (guideLine === null) {
               for (let i = 0; i < processing.scale; i++) {
-                if (selectedClass === "line" + i) {
+                if (selectedClass === "line" + i + "-" + props.currentId) {
                   continue;
                 } else {
-                  d3.selectAll(".line" + i)
+                  d3.selectAll(".line" + i + "-" + props.currentId)
                     .attr(
                       "stroke",
                       cwtColors[

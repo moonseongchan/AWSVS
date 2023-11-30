@@ -82,8 +82,9 @@ const Dashboard = (props) => {
               {/* Slot Content */}
               <div class="slot-content row align-items-center d-flex pb-1 justify-content-center">
                 {/* Line Graph */}
-                <div id="line-graph" class="px-0 py-1">
+                <div id={`slot${slot.id}-linegraph`} class="px-0 py-1">
                   <LineGraph
+                    currentId={slot.id}
                     slot={slot}
                     handleScaleChange={handleScaleChange}
                   />
@@ -93,8 +94,12 @@ const Dashboard = (props) => {
                 {/* {slot.options.showSpectrogram && <hr class="my-2" />} */}
 
                 {slot.options.showSpectrogram && (
-                  <div id="spectrogram" class="px-0 py-1">
-                    <Spectrogram slot={slot} key={slot.zoomDomain} />
+                  <div id={`slot${slot.id}-spectrogram`} class="px-0 py-1">
+                    <Spectrogram
+                      currentId={slot.id}
+                      slot={slot}
+                      key={slot.zoomDomain}
+                    />
                   </div>
                 )}
 
