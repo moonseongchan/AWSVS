@@ -9,11 +9,11 @@ const Header = (props) => {
       <div class="col px-2" id="logo">
         <img src={Image} alt="logo" height={55} />
       </div>
-      <div class="col download">
+      {/* <div class="col download">
         <button type="button" class="download-btn btn btn-outline-light">
           Download
         </button>
-      </div>
+      </div> */}
     </header>
   );
 };
