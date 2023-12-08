@@ -4,7 +4,7 @@ import * as d3 from "d3";
 
 const ComparisonGraph = (props) => {
   // To resize the width of the graph
-  const margin = { top: 10, right: 30, bottom: 20, left: 40 };
+  const margin = { top: 10, right: 30, bottom: 40, left: 60 };
   const getGraphWidth = () => {
     const sidebar = document
       .getElementById("sidebar-content")
@@ -129,11 +129,27 @@ const ComparisonGraph = (props) => {
           "transform",
           `translate(${margin.left},${margin.top + cpLineHeight})`
         )
-        .call(d3.axisBottom(xScale));
+        .call(d3.axisBottom(xScale))
+        .append('text')
+        .attr('x', width / 2)
+        .attr('y', margin.bottom) // Adjust the position of the label
+        .attr('text-anchor', 'middle')
+        .attr('fill', 'black')
+        .style('font-size', `12px`)
+        .text("xAxisLabel");
+
       const yAxisG = cpLineSvg
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`)
-        .call(d3.axisLeft(yScale));
+        .call(d3.axisLeft(yScale))
+        .append('text')
+        .attr('transform', 'rotate(-90)')
+        .attr('x', -cpScatterHeight / 2)
+        .attr('y', -margin.left + 10) // Adjust the position of the label
+        .attr('text-anchor', 'middle')
+        .attr('fill', 'black')
+        .style('font-size', `12px`)
+        .text("yAxisLabel");
 
       //// Grid
       if (options.showGrid && !options.zomming) {
@@ -207,12 +223,27 @@ const ComparisonGraph = (props) => {
             "transform",
             `translate(${margin.left},${margin.top + cpLineHeight})`
           )
-          .call(d3.axisBottom(newXScale));
+          .call(d3.axisBottom(newXScale))
+          .append('text')
+          .attr('x', width / 2)
+          .attr('y', margin.bottom) // Adjust the position of the label
+          .attr('text-anchor', 'middle')
+          .attr('fill', 'black')
+          .style('font-size', `12px`)
+          .text("xAxisLabel");
 
         cpLineSvg
           .append("g")
           .attr("transform", `translate(${margin.left},${margin.top})`)
-          .call(d3.axisLeft(yScale));
+          .call(d3.axisLeft(yScale))
+          .append('text')
+          .attr('transform', 'rotate(-90)')
+          .attr('x', -cpLineHeight / 2)
+          .attr('y', -margin.left + 10) // Adjust the position of the label
+          .attr('text-anchor', 'middle')
+          .attr('fill', 'black')
+          .style('font-size', `12px`)
+          .text("yAxisLabel");
 
         const newXAxis = d3.axisBottom(newXScale);
         const yAxis = d3.axisLeft(yScale);
@@ -397,12 +428,27 @@ const ComparisonGraph = (props) => {
             "transform",
             `translate(${margin.left}, ${cpScatterHeight + margin.top})`
           )
-          .call(d3.axisBottom(xScale));
+          .call(d3.axisBottom(xScale))
+          .append('text')
+          .attr('x', width / 2)
+          .attr('y', margin.bottom) // Adjust the position of the label
+          .attr('text-anchor', 'middle')
+          .attr('fill', 'black')
+          .style('font-size', `12px`)
+          .text("xAxisLabel");
 
         cpScatterSvg
           .append("g")
           .attr("transform", `translate(${margin.left}, ${margin.top})`)
-          .call(d3.axisLeft(yScale));
+          .call(d3.axisLeft(yScale))
+          .append('text')
+          .attr('transform', 'rotate(-90)')
+          .attr('x', -cpScatterHeight / 2)
+          .attr('y', -margin.left + 10) // Adjust the position of the label
+          .attr('text-anchor', 'middle')
+          .attr('fill', 'black')
+          .style('font-size', `12px`)
+          .text("yAxisLabel");
 
         // Plot Points
         cpScatterSvg
@@ -747,7 +793,15 @@ const ComparisonGraph = (props) => {
           errBarGraph
             .append("g")
             .attr("transform", `translate(${cpWidthGap / 2},${0})`)
-            .call(d3.axisLeft(yScaleBar).ticks(6, "f"));
+            .call(d3.axisLeft(yScaleBar).ticks(6, "f"))
+            .append('text')
+            .attr('transform', 'rotate(-90)')
+            .attr('x', -cpBarHeight / 2)
+            .attr('y', -margin.left + 10) // Adjust the position of the label
+            .attr('text-anchor', 'middle')
+            .attr('fill', 'black')
+            .style('font-size', `12px`)
+            .text("yAxisLabel");
 
           // console.log(currentError, targetError);
 
@@ -910,7 +964,15 @@ const ComparisonGraph = (props) => {
         errBarGraph
           .append("g")
           .attr("transform", `translate(${cpWidthGap / 2},${0})`)
-          .call(d3.axisLeft(yScaleBar));
+          .call(d3.axisLeft(yScaleBar))
+          .append('text')
+          .attr('transform', 'rotate(-90)')
+          .attr('x', -cpBarHeight / 2)
+          .attr('y', -margin.left + 10) // Adjust the position of the label
+          .attr('text-anchor', 'middle')
+          .attr('fill', 'black')
+          .style('font-size', `12px`)
+          .text("yAxisLabel");
       });
     }
   }, [width, props.currentSlot, props.targetSlot]);
