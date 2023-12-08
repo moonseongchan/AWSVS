@@ -10,7 +10,7 @@ const LineGraph = (props) => {
   const stftGraphRef = useRef(null);
 
   // To resize the width of the graph
-  const margin = { top: 10, right: 30, bottom: 20, left: 40 };
+  const margin = { top: 10, right: 30, bottom: 40, left: 60 };
   const getGraphWidth = () => {
     const sidebar = document
       .getElementById("sidebar-content")
@@ -98,11 +98,27 @@ const LineGraph = (props) => {
       const xAxisG = svg
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top + height})`)
-        .call(d3.axisBottom(xScale));
+        .call(d3.axisBottom(xScale))
+        .append('text')
+        .attr('x', width / 2)
+        .attr('y', margin.bottom) // Adjust the position of the label
+        .attr('text-anchor', 'middle')
+        .attr('fill', 'black')
+        .style('font-size', `12px`)
+        .text("xAxisLabel");
+
       const yAxisG = svg
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`)
-        .call(d3.axisLeft(yScale));
+        .call(d3.axisLeft(yScale))
+        .append('text')
+        .attr('transform', 'rotate(-90)')
+        .attr('x', -height / 2)
+        .attr('y', -margin.left + 10) // Adjust the position of the label
+        .attr('text-anchor', 'middle')
+        .attr('fill', 'black')
+        .style('font-size', `12px`)
+        .text("yAxisLabel");;
 
       //// Grid
       if (options.showGrid && !options.zomming) {
@@ -169,12 +185,27 @@ const LineGraph = (props) => {
         svg
           .append("g")
           .attr("transform", `translate(${margin.left},${margin.top + height})`)
-          .call(d3.axisBottom(newXScale));
+          .call(d3.axisBottom(newXScale))
+          .append('text')
+          .attr('x', width / 2)
+          .attr('y', margin.bottom) // Adjust the position of the label
+          .attr('text-anchor', 'middle')
+          .attr('fill', 'black')
+          .style('font-size', `12px`)
+          .text("xAxisLabel");
 
         svg
           .append("g")
           .attr("transform", `translate(${margin.left},${margin.top})`)
-          .call(d3.axisLeft(yScale));
+          .call(d3.axisLeft(yScale))
+          .append('text')
+          .attr('transform', 'rotate(-90)')
+          .attr('x', -height / 2)
+          .attr('y', -margin.left + 10) // Adjust the position of the label
+          .attr('text-anchor', 'middle')
+          .attr('fill', 'black')
+          .style('font-size', `12px`)
+          .text("yAxisLabel");
 
         const newXAxis = d3.axisBottom(newXScale);
         const yAxis = d3.axisLeft(yScale);
@@ -543,11 +574,27 @@ const LineGraph = (props) => {
               "transform",
               `translate(${margin.left},${margin.top + heightSTFT})`
             )
-            .call(xAxisSTFT);
+            .call(xAxisSTFT)
+            .append('text')
+            .attr('x', width / 2)
+            .attr('y', margin.bottom) // Adjust the position of the label
+            .attr('text-anchor', 'middle')
+            .attr('fill', 'black')
+            .style('font-size', `12px`)
+            .text("xAxisLabel");
+
           stftSvg
             .append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`)
-            .call(yAxisSTFT);
+            .call(yAxisSTFT)
+            .append('text')
+            .attr('transform', 'rotate(-90)')
+            .attr('x', -heightSTFT / 2)
+            .attr('y', -margin.left + 10) // Adjust the position of the label
+            .attr('text-anchor', 'middle')
+            .attr('fill', 'black')
+            .style('font-size', `12px`)
+            .text("yAxisLabel");
         }
 
         const brush = d3

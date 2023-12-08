@@ -3,7 +3,7 @@ import * as d3 from "d3";
 
 const Spectrogram = (props) => {
   // To resize the width of the graph
-  const margin = { top: 10, right: 30, bottom: 20, left: 40 };
+  const margin = { top: 10, right: 30, bottom: 40, left: 60 };
   const getGraphWidth = () => {
     const sidebar = document
       .getElementById("sidebar-content")
@@ -22,7 +22,7 @@ const Spectrogram = (props) => {
   const spectrogramRef = useRef(null);
   const initialWidth = getGraphWidth() - margin.left - margin.right;
   const [width, setWidth] = useState(initialWidth);
-  const height = 200 - margin.top - margin.bottom;
+  const height = 220 - margin.top - margin.bottom;
 
   useEffect(() => {
     window.addEventListener("resize", handleResize);
@@ -106,7 +106,14 @@ const Spectrogram = (props) => {
       svg
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top + height})`)
-        .call(d3.axisBottom(xScale));
+        .call(d3.axisBottom(xScale))
+          .append('text')
+          .attr('x', width / 2)
+          .attr('y', margin.bottom) // Adjust the position of the label
+          .attr('text-anchor', 'middle')
+          .attr('fill', 'black')
+          .style('font-size', `12px`)
+          .text("xAxisLabel");;
 
       if (plot.length <= 6) {
         svg
