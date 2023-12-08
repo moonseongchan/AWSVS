@@ -107,24 +107,40 @@ const Spectrogram = (props) => {
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top + height})`)
         .call(d3.axisBottom(xScale))
-          .append('text')
-          .attr('x', width / 2)
-          .attr('y', margin.bottom) // Adjust the position of the label
-          .attr('text-anchor', 'middle')
-          .attr('fill', 'black')
-          .style('font-size', `12px`)
-          .text("xAxisLabel");;
+        .append("text")
+        .attr("x", width / 2)
+        .attr("y", margin.bottom - 5) // Adjust the position of the label
+        .attr("text-anchor", "middle")
+        .attr("fill", "black")
+        .style("font-size", `14px`)
+        .text("Sample Index");
 
       if (plot.length <= 6) {
         svg
           .append("g")
           .attr("transform", `translate(${margin.left},${margin.top})`)
-          .call(d3.axisLeft(yScale).ticks(plot.length, "f"));
+          .call(d3.axisLeft(yScale).ticks(plot.length, "f"))
+          .append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("x", -height / 2)
+          .attr("y", -margin.left + 30) // Adjust the position of the label
+          .attr("text-anchor", "middle")
+          .attr("fill", "black")
+          .style("font-size", `14px`)
+          .text("Scale");
       } else {
         svg
           .append("g")
           .attr("transform", `translate(${margin.left},${margin.top})`)
-          .call(d3.axisLeft(yScale));
+          .call(d3.axisLeft(yScale))
+          .append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("x", -height / 2)
+          .attr("y", -margin.left + 25) // Adjust the position of the label
+          .attr("text-anchor", "middle")
+          .attr("fill", "black")
+          .style("font-size", `14px`)
+          .text("Scale");
       }
     }
   }, [width, props.slot]);
