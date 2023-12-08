@@ -78,7 +78,7 @@ export default function App() {
 
   return (
     <div class="container-fluid h-100">
-      <Header />
+      <Header slots={slots} />
       <div id="content" class="row">
         <Dashboard
           slots={slots}
