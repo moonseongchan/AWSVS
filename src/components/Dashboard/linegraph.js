@@ -581,7 +581,7 @@ const LineGraph = (props) => {
             .attr("text-anchor", "middle")
             .attr("fill", "black")
             .style("font-size", `14px`)
-            .text("Time");
+            .text("Frequency");
 
           stftSvg
             .append("g")
@@ -594,7 +594,7 @@ const LineGraph = (props) => {
             .attr("text-anchor", "middle")
             .attr("fill", "black")
             .style("font-size", `14px`)
-            .text("Frequency");
+            .text("Amplitude");
         }
 
         const brush = d3
