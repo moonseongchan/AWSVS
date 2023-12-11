@@ -238,12 +238,12 @@ const ComparisonGraph = (props) => {
           .call(d3.axisLeft(yScale))
           .append("text")
           .attr("transform", "rotate(-90)")
-          .attr("x", -cpLineHeight / 2 + 5)
+          .attr("x", -cpLineHeight / 2 + 6)
           .attr("y", -margin.left + 10) // Adjust the position of the label
           .attr("text-anchor", "middle")
           .attr("fill", "black")
           .style("font-size", `14px`)
-          .text("Amplitude (db)");
+          .text("Amplitude [mV]");
 
         const newXAxis = d3.axisBottom(newXScale);
         const yAxis = d3.axisLeft(yScale);
