@@ -38,8 +38,10 @@ const Header = (props) => {
     const zip = new JSZip();
 
     props.slots.forEach((slot) => {
-      exportDataToCSV(zip, slot, "sd");
-      exportDataToCSV(zip, slot, "cwt");
+      if (slot.data.length !== 0) {
+        exportDataToCSV(zip, slot, "sd");
+        exportDataToCSV(zip, slot, "cwt");
+      }
     });
 
     zip.generateAsync({ type: "blob" }).then((content) => {
